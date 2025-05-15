@@ -1,5 +1,6 @@
 package com.findit.service;
 
+import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -38,7 +39,7 @@ public class LostItemApiService {
             String startYmd = startDate.format(formatter);
             String endYmd = endDate.format(formatter);
             int pageNo = 1;
-            int numOfRows = 100; // 한 번에 가져올 데이터 수
+            int numOfRows = 50; // 한 번에 가져올 데이터 수
             
             String urlStr = BASE_URL +
                     "?serviceKey=" + SERVICE_KEY +
@@ -56,9 +57,9 @@ public class LostItemApiService {
             
             BufferedReader br;
             if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
-                br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
             } else {
-                br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+                br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8));
                 log.error("API 호출 실패: {}", conn.getResponseCode());
             }
             
