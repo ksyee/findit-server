@@ -1,0 +1,72 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.2.5'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+}
+
+group = 'com.findit'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	
+	// Lombok 설정 명확하게 지정
+	compileOnly 'org.projectlombok:lombok:1.18.30'
+	annotationProcessor 'org.projectlombok:lombok:1.18.30'
+	
+	// Spring Retry 의존성 추가
+	implementation 'org.springframework.retry:spring-retry'
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+	
+	// Actuator와 Micrometer 의존성 추가
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+
+	// JAXB (Jakarta XML Binding) for XML processing
+	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2' // Jakarta EE 9+ compatible
+	implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.5' // Jakarta EE 9+ compatible
+	
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'com.h2database:h2:2.2.224'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // Swagger 의존성 추가
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+// 테스트 로그 출력을 위한 설정 추가
+tasks.withType(Test) {
+    testLogging {
+        showStandardStreams = true
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+    }
+}
+
+// Lombok 설정을 위한 추가 설정
+compileJava {
+    options.compilerArgs << '-parameters'
+    options.annotationProcessorPath = configurations.annotationProcessor
+}
