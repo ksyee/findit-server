@@ -14,11 +14,6 @@ public class LostItemDto {
     @Schema(description = "분실물 관리 ID (경찰청 ATC_ID)", example = "L2024052512345")
     private String atcId;
     
-    @Schema(description = "분실물명(물품명)", example = "아이폰 15 Pro", required = true)
-    @NotBlank(message = "물품명은 필수입니다")
-    @Size(max = 100, message = "물품명은 100자를 초과할 수 없습니다")
-    private String sltPrdtNm;
-    
     @Schema(description = "물품분류", example = "휴대폰", required = true)
     @NotBlank(message = "물품분류는 필수입니다")
     @Size(max = 50, message = "물품분류는 50자를 초과할 수 없습니다")
@@ -33,10 +28,6 @@ public class LostItemDto {
     @NotBlank(message = "분실일자는 필수입니다")
     private String lstYmd;
     
-    @Schema(description = "습득물 상세내용(분실물 제목)", example = "검정색 아이폰 15 Pro, 케이스 없음")
-    @Size(max = 1000, message = "상세내용은 1000자를 초과할 수 없습니다")
-    private String sltSbjt;
-
     @Schema(description = "경찰청 API 결과 순번", example = "1")
     private String rnum;
     
@@ -45,14 +36,11 @@ public class LostItemDto {
     }
     
     // 모든 필드를 포함한 생성자
-    public LostItemDto(String atcId, String sltPrdtNm, String prdtClNm, String lstPlace, String lstYmd, 
-                       String sltSbjt, String rnum) {
+    public LostItemDto(String atcId, String prdtClNm, String lstPlace, String lstYmd, String rnum) {
         this.atcId = atcId;
-        this.sltPrdtNm = sltPrdtNm;
         this.prdtClNm = prdtClNm;
         this.lstPlace = lstPlace;
         this.lstYmd = lstYmd;
-        this.sltSbjt = sltSbjt;
         this.rnum = rnum;
     }
 
@@ -63,11 +51,9 @@ public class LostItemDto {
         }
         return LostItemDto.builder()
                 .atcId(lostItem.getAtcId())
-                .sltPrdtNm(lostItem.getSltPrdtNm())
                 .prdtClNm(lostItem.getPrdtClNm())
                 .lstPlace(lostItem.getLstPlace())
-                .lstYmd(lostItem.getLstYmd() != null ? lostItem.getLstYmd().toLocalDate().toString() : null)
-                .sltSbjt(lostItem.getSltSbjt())
+                .lstYmd(lostItem.getLstYmd())
                 .rnum(lostItem.getRnum())
                 .build();
     }
@@ -77,10 +63,6 @@ public class LostItemDto {
         return atcId;
     }
     
-    public String getSltPrdtNm() {
-        return sltPrdtNm;
-    }
-
     public String getPrdtClNm() {
         return prdtClNm;
     }
@@ -93,10 +75,6 @@ public class LostItemDto {
         return lstYmd;
     }
     
-    public String getSltSbjt() {
-        return sltSbjt;
-    }
-
     public String getRnum() {
         return rnum;
     }
@@ -106,10 +84,6 @@ public class LostItemDto {
         this.atcId = atcId;
     }
     
-    public void setSltPrdtNm(String sltPrdtNm) {
-        this.sltPrdtNm = sltPrdtNm;
-    }
-
     public void setPrdtClNm(String prdtClNm) {
         this.prdtClNm = prdtClNm;
     }
@@ -122,10 +96,6 @@ public class LostItemDto {
         this.lstYmd = lstYmd;
     }
     
-    public void setSltSbjt(String sltSbjt) {
-        this.sltSbjt = sltSbjt;
-    }
-
     public void setRnum(String rnum) {
         this.rnum = rnum;
     }
@@ -137,11 +107,9 @@ public class LostItemDto {
     
     public static class Builder {
         private String atcId;
-        private String sltPrdtNm;
         private String prdtClNm;
         private String lstPlace;
         private String lstYmd;
-        private String sltSbjt;
         private String rnum;
         
         public Builder atcId(String atcId) {
@@ -149,11 +117,6 @@ public class LostItemDto {
             return this;
         }
         
-        public Builder sltPrdtNm(String sltPrdtNm) {
-            this.sltPrdtNm = sltPrdtNm;
-            return this;
-        }
-
         public Builder prdtClNm(String prdtClNm) {
             this.prdtClNm = prdtClNm;
             return this;
@@ -169,11 +132,6 @@ public class LostItemDto {
             return this;
         }
         
-        public Builder sltSbjt(String sltSbjt) {
-            this.sltSbjt = sltSbjt;
-            return this;
-        }
-
         public Builder rnum(String rnum) {
             this.rnum = rnum;
             return this;
@@ -182,11 +140,9 @@ public class LostItemDto {
         public LostItemDto build() {
             LostItemDto dto = new LostItemDto();
             dto.setAtcId(this.atcId);
-            dto.setSltPrdtNm(this.sltPrdtNm);
             dto.setPrdtClNm(this.prdtClNm);
             dto.setLstPlace(this.lstPlace);
             dto.setLstYmd(this.lstYmd);
-            dto.setSltSbjt(this.sltSbjt);
             dto.setRnum(this.rnum);
             return dto;
         }

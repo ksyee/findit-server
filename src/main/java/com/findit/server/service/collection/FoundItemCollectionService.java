@@ -75,23 +75,21 @@ public class FoundItemCollectionService {
       int totalSaved = 0;
       
       try {
+        // 날짜 범위 설정
         String endYmdStr = LocalDate.now().minusDays(1).format(DateTimeFormatter.BASIC_ISO_DATE);
         String startYmdStr = LocalDate.now().minusDays(7).format(DateTimeFormatter.BASIC_ISO_DATE);
-        // 사용자 요청: 페이지번호, 행수, 시작/종료일자 외 파라미터 사용 안함
-        PoliceApiFoundItemResponse response = apiClient.fetchFoundItems(1, 100, startYmdStr,
-          endYmdStr);
-        if (response != null && response.getBody() != null
-          && response.getBody().getItems() != null) {
-          List<PoliceApiFoundItem> foundItems = response.getBody().getItems();
+        // API 호출 및 응답 처리
+        PoliceApiFoundItemResponse response = apiClient.fetchFoundItems(1, 100, startYmdStr, endYmdStr);
+        List<PoliceApiFoundItem> foundItems = response.getItems();
+        logger.info("[습득물] API에서 받은 총 데이터 수: {}건", foundItems.size());
+        if (!foundItems.isEmpty()) {
           foundItemsFetchedCounter.increment(foundItems.size());
-          
           List<FoundItem> mappedItems = mapper.mapList(foundItems);
-          
           int savedCount = processAndSaveItems(mappedItems);
           foundItemsSavedCounter.increment(savedCount);
           totalSaved += savedCount;
         } else {
-          logger.warn("Received null or empty response from Police API for found items.");
+          logger.warn("[습득물] API에서 빈 목록을 반환했습니다.");
         }
       } catch (org.springframework.web.client.HttpClientErrorException.TooManyRequests e) {
         logger.error("Too many requests error fetching found items: {}", e.getMessage(), e);
@@ -141,10 +139,11 @@ public class FoundItemCollectionService {
     boolean duplicateFound = false;
     while (!duplicateFound) {
       PoliceApiFoundItemResponse response = apiClient.fetchFoundItems(page, 100, startYmd, endYmd);
-      if (response == null || response.getBody() == null || response.getBody().getItems() == null || response.getBody().getItems().isEmpty()) {
+      List<PoliceApiFoundItem> foundItems = response.getItems();
+      logger.info("[습득물] 페이지{} API 반환 데이터 수: {}건", page, foundItems.size());
+      if (foundItems.isEmpty()) {
         break;
       }
-      List<PoliceApiFoundItem> foundItems = response.getBody().getItems();
       List<FoundItem> mappedItems = mapper.mapList(foundItems);
       for (FoundItem item : mappedItems) {
         if (!validator.isValidFoundItem(item)) {

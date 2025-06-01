@@ -1,14 +1,16 @@
+-- 테이블 삭제 (이미 존재하는 경우에만)
+DROP TABLE IF EXISTS lost_item;
+DROP TABLE IF EXISTS found_item;
+
 -- 테이블 생성 (이미 존재하지 않는 경우에만)
 CREATE TABLE IF NOT EXISTS lost_item (
     atc_id VARCHAR(50) PRIMARY KEY,
     slt_prdt_nm VARCHAR(255),
     prdt_cl_nm VARCHAR(255),
     lst_place VARCHAR(255),
-    lst_ymd TIMESTAMP,
+    lst_ymd VARCHAR(8),
     slt_sbjt TEXT,
-    rnum VARCHAR(100),
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP
+    rnum VARCHAR(100)
 );
 
 CREATE TABLE IF NOT EXISTS found_item (
@@ -20,9 +22,7 @@ CREATE TABLE IF NOT EXISTS found_item (
     fd_file_path_img VARCHAR(500),
     dep_place VARCHAR(200),
     clr_nm VARCHAR(50),
-    fd_sn VARCHAR(50),
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP
+    fd_sn VARCHAR(50)
 );
 
 -- 인덱스 추가 (이미 존재하지 않는 경우에만)

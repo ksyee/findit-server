@@ -91,15 +91,12 @@ public class PoliceApiClient {
     logger.info("Fetching lost items from Police API with URL: {}", uri);
     
     try {
-      ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
+      ResponseEntity<PoliceApiLostItemResponse> response = restTemplate.getForEntity(uri, PoliceApiLostItemResponse.class);
       
-      if (response.getBody() != null) {
-        logger.info("Police API raw response (lost items): {}", response.getBody());
+      PoliceApiLostItemResponse lostItemResponse = response.getBody();
+      if (lostItemResponse != null) {
         logger.info("Successfully fetched lost items. Total: {}, Page: {}, Rows Requested: {}",
-          response.getBody(), pageNo, numOfRows);
-        // TODO: response.getBody()를 PoliceApiLostItemResponse로 변환
-        PoliceApiLostItemResponse lostItemResponse = new PoliceApiLostItemResponse();
-        lostItemResponse.setItems(Collections.emptyList());
+          lostItemResponse.getTotalCount(), lostItemResponse.getPageNo(), lostItemResponse.getNumOfRows());
         return lostItemResponse;
       } else {
         logger.warn("Received null body from Police API for lost items. URL: {}", uri);
@@ -161,15 +158,12 @@ public class PoliceApiClient {
     logger.info("Fetching found items from Police API with URL: {}", uri);
     
     try {
-      ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
+      ResponseEntity<PoliceApiFoundItemResponse> response = restTemplate.getForEntity(uri, PoliceApiFoundItemResponse.class);
       
-      if (response.getBody() != null) {
-        logger.info("Police API raw response (found items): {}", response.getBody());
+      PoliceApiFoundItemResponse foundItemResponse = response.getBody();
+      if (foundItemResponse != null) {
         logger.info("Successfully fetched found items. Total: {}, Page: {}, Rows: {}",
-          response.getBody(), pageNo, numOfRows);
-        // TODO: response.getBody()를 PoliceApiFoundItemResponse로 변환
-        PoliceApiFoundItemResponse foundItemResponse = new PoliceApiFoundItemResponse();
-        foundItemResponse.setItems(Collections.emptyList());
+          foundItemResponse.getTotalCount(), foundItemResponse.getPageNo(), foundItemResponse.getNumOfRows());
         return foundItemResponse;
       } else {
         logger.warn("Received null body from Police API for found items. URL: {}", uri);

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,12 +47,10 @@ public class LostItemService {
     public LostItemDto createLostItem(LostItemDto lostItemDto) {
         LostItem lostItem = new LostItem();
         lostItem.setAtcId(lostItemDto.getAtcId());
-        lostItem.setSltPrdtNm(lostItemDto.getSltPrdtNm()); 
         lostItem.setPrdtClNm(lostItemDto.getPrdtClNm()); 
         lostItem.setLstPlace(lostItemDto.getLstPlace()); 
-        // String → LocalDate 변환 (yyyy-MM-dd 포맷)
-        lostItem.setLstYmd(lostItemDto.getLstYmd() != null ? java.time.LocalDate.parse(lostItemDto.getLstYmd()).atStartOfDay() : null);   
-        lostItem.setSltSbjt(lostItemDto.getSltSbjt()); 
+        // 문자열(yyyyMMdd) 그대로 저장
+        lostItem.setLstYmd(lostItemDto.getLstYmd());
         if (lostItemDto.getRnum() != null) { 
             lostItem.setRnum(lostItemDto.getRnum());
         }
@@ -65,12 +64,10 @@ public class LostItemService {
         LostItem existingLostItem = lostItemRepository.findByAtcId(atcId)
                 .orElseThrow(() -> new ResourceNotFoundException("LostItem", "atcId", atcId));
         
-        existingLostItem.setSltPrdtNm(lostItemDto.getSltPrdtNm());
         existingLostItem.setPrdtClNm(lostItemDto.getPrdtClNm());
         existingLostItem.setLstPlace(lostItemDto.getLstPlace());
-        // String → LocalDate 변환 (yyyy-MM-dd 포맷)
-        existingLostItem.setLstYmd(lostItemDto.getLstYmd() != null ? java.time.LocalDate.parse(lostItemDto.getLstYmd()).atStartOfDay() : null);
-        existingLostItem.setSltSbjt(lostItemDto.getSltSbjt());
+        // 문자열(yyyyMMdd) 그대로 저장
+        existingLostItem.setLstYmd(lostItemDto.getLstYmd());
         if (lostItemDto.getRnum() != null) { 
             existingLostItem.setRnum(lostItemDto.getRnum());
         }
@@ -111,7 +108,9 @@ public class LostItemService {
     @Transactional(readOnly = true)
     public Page<LostItemDto> findByLstYmdBetween(LocalDateTime start, LocalDateTime end, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return lostItemRepository.findByLstYmdBetween(start, end, pageable)
+        String startYmd = start.format(DateTimeFormatter.BASIC_ISO_DATE);
+        String endYmd = end.format(DateTimeFormatter.BASIC_ISO_DATE);
+        return lostItemRepository.findByLstYmdBetween(startYmd, endYmd, pageable)
                 .map(LostItemDto::fromEntity);
     }
     
@@ -132,7 +131,8 @@ public class LostItemService {
     @Transactional(readOnly = true)
     public List<LostItemDto> findRecentLostItems(String prdtClNm, int days) {
         LocalDateTime startDate = LocalDateTime.now().minusDays(days);
-        return lostItemRepository.findRecentLostItemsByType(prdtClNm, startDate).stream()
+        String startYmd = startDate.format(DateTimeFormatter.BASIC_ISO_DATE);
+        return lostItemRepository.findRecentLostItemsByType(prdtClNm, startYmd).stream()
                 .map(LostItemDto::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -140,8 +140,9 @@ public class LostItemService {
     @Transactional(readOnly = true)
     public Page<LostItemDto> findRecentLostItems(String prdtClNm, int days, int page, int size) {
         LocalDateTime startDate = LocalDateTime.now().minusDays(days);
+        String startYmd = startDate.format(DateTimeFormatter.BASIC_ISO_DATE);
         Pageable pageable = PageRequest.of(page, size);
-        return lostItemRepository.findRecentLostItemsByType(prdtClNm, startDate, pageable)
+        return lostItemRepository.findRecentLostItemsByType(prdtClNm, startYmd, pageable)
                 .map(LostItemDto::fromEntity);
     }
 }

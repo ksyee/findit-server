@@ -44,8 +44,7 @@ public class DataValidator {
      */
     public boolean isDetailedValidLostItem(LostItem item) {
         return isValidLostItem(item) &&
-               item.getLstPlace() != null &&
-               item.getSltSbjt() != null;
+               item.getLstPlace() != null;
                // item.getStatus() != null; // LostItem 엔티티에 status 필드 없음
     }
     

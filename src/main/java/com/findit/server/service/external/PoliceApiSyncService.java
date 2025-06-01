@@ -88,15 +88,18 @@ public class PoliceApiSyncService {
                     LostItem lostItemToSave = (existingItem != null) ? existingItem : new LostItem();
 
                     lostItemToSave.setAtcId(apiItem.getLstGoodsSn());
-                    lostItemToSave.setSltPrdtNm(apiItem.getItemName()); 
                     lostItemToSave.setPrdtClNm(apiItem.getItemType()); 
                     lostItemToSave.setLstPlace(apiItem.getLocation()); 
-                    lostItemToSave.setSltSbjt(apiItem.getDescription()); 
                     
-                    LocalDateTime lostDateTime = parseDate(apiItem.getLostDate(), "LostDate for LST_GOODS_SN: " + apiItem.getLstGoodsSn());
-                    if (lostDateTime != null) {
-                        lostItemToSave.setLstYmd(lostDateTime);
+                    // PoliceApiLostItem의 lstYmd (분실일자) 매핑
+                    String rawDate = apiItem.getLostDate();
+                    if (rawDate != null && !rawDate.trim().isEmpty()) {
+                        String trimmed = rawDate.trim();
+                        lostItemToSave.setLstYmd(trimmed.length() >= 8 ? trimmed.substring(0, 8) : trimmed);
+                    } else {
+                        lostItemToSave.setLstYmd(null);
                     }
+
                     if (apiItem.getRnum() != null) { 
                         lostItemToSave.setRnum(apiItem.getRnum());
                     }

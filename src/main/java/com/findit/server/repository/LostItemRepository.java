@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,9 +22,9 @@ public interface LostItemRepository extends JpaRepository<LostItem, String> {
     
     Page<LostItem> findByLstPlaceContaining(String lstPlace, Pageable pageable);
     
-    List<LostItem> findByLstYmdBetween(LocalDateTime start, LocalDateTime end);
+    List<LostItem> findByLstYmdBetween(String startYmd, String endYmd);
     
-    Page<LostItem> findByLstYmdBetween(LocalDateTime start, LocalDateTime end, Pageable pageable);
+    Page<LostItem> findByLstYmdBetween(String startYmd, String endYmd, Pageable pageable);
     
     Optional<LostItem> findByAtcId(String atcId); 
     
@@ -33,15 +32,15 @@ public interface LostItemRepository extends JpaRepository<LostItem, String> {
     
     void deleteByAtcId(String atcId);
     
-    @Query("SELECT l FROM LostItem l WHERE l.sltSbjt LIKE %:keyword% OR l.lstPlace LIKE %:keyword% OR l.sltPrdtNm LIKE %:keyword%")
+    @Query("SELECT l FROM LostItem l WHERE l.lstPlace LIKE %:keyword%")
     List<LostItem> searchByKeyword(@Param("keyword") String keyword);
     
-    @Query("SELECT l FROM LostItem l WHERE l.sltSbjt LIKE %:keyword% OR l.lstPlace LIKE %:keyword% OR l.sltPrdtNm LIKE %:keyword%")
+    @Query("SELECT l FROM LostItem l WHERE l.lstPlace LIKE %:keyword%")
     Page<LostItem> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
     
-    @Query("SELECT l FROM LostItem l WHERE l.prdtClNm = :itemType AND l.lstYmd >= :startDate")
-    List<LostItem> findRecentLostItemsByType(@Param("itemType") String itemType, @Param("startDate") LocalDateTime startDate);
+    @Query("SELECT l FROM LostItem l WHERE l.prdtClNm = :itemType AND l.lstYmd >= :startYmd")
+    List<LostItem> findRecentLostItemsByType(@Param("itemType") String itemType, @Param("startYmd") String startYmd);
     
-    @Query("SELECT l FROM LostItem l WHERE l.prdtClNm = :itemType AND l.lstYmd >= :startDate")
-    Page<LostItem> findRecentLostItemsByType(@Param("itemType") String itemType, @Param("startDate") LocalDateTime startDate, Pageable pageable);
+    @Query("SELECT l FROM LostItem l WHERE l.prdtClNm = :itemType AND l.lstYmd >= :startYmd")
+    Page<LostItem> findRecentLostItemsByType(@Param("itemType") String itemType, @Param("startYmd") String startYmd, Pageable pageable);
 }

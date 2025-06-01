@@ -8,6 +8,9 @@ import com.findit.server.service.collection.FoundItemCollectionService;
 import com.findit.server.service.collection.LostItemCollectionService;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -32,9 +35,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -70,6 +70,7 @@ public class LostItemControllerTest {
   private List<LostItemDto> lostItemDtoList;
   private LocalDateTime fixedDateTime;
   private String fixedDateTimeString;
+  private String fixedDateYmd;
 
   @BeforeEach
   void setUp() {
@@ -85,23 +86,20 @@ public class LostItemControllerTest {
 
     fixedDateTime = LocalDateTime.now().withNano(0);
     fixedDateTimeString = fixedDateTime.format(formatter);
+    fixedDateYmd = fixedDateTime.toLocalDate().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
     lostItemDto = LostItemDto.builder()
       .atcId("L_TEST_ATC_ID_1")
-      .sltPrdtNm("아이폰 14 프로")
       .prdtClNm("전자기기")
       .lstPlace("서울시 강남구 역삼동")
-      .lstYmd(fixedDateTime.toLocalDate().toString())
-      .sltSbjt("아이폰 14 프로 블랙 색상")
+      .lstYmd(fixedDateYmd)
       .build();
 
     LostItemDto lostItemDto2 = LostItemDto.builder()
       .atcId("L_TEST_ATC_ID_2")
-      .sltPrdtNm("지갑")
       .prdtClNm("지갑")
       .lstPlace("서울시 송파구 송파동")
-      .lstYmd(fixedDateTime.toLocalDate().toString())
-      .sltSbjt("가죽지갑 검정색")
+      .lstYmd(fixedDateYmd)
       .build();
 
     lostItemDtoList = Arrays.asList(lostItemDto, lostItemDto2);
@@ -123,10 +121,10 @@ public class LostItemControllerTest {
       .andExpect(jsonPath("$.data", hasSize(2)))
       .andExpect(jsonPath("$.data[0].atcId").value("L_TEST_ATC_ID_1"))
       .andExpect(jsonPath("$.data[0].prdtClNm").value(lostItemDto.getPrdtClNm()))
-      .andExpect(jsonPath("$.data[0].lstYmd").value(fixedDateTime.toLocalDate().toString()))
+      .andExpect(jsonPath("$.data[0].lstYmd").value(fixedDateYmd))
       .andExpect(jsonPath("$.data[1].atcId").value("L_TEST_ATC_ID_2"))
       .andExpect(jsonPath("$.data[1].prdtClNm").value(lostItemDtoList.get(1).getPrdtClNm()))
-      .andExpect(jsonPath("$.data[1].lstYmd").value(fixedDateTime.toLocalDate().toString()))
+      .andExpect(jsonPath("$.data[1].lstYmd").value(fixedDateYmd))
       .andExpect(jsonPath("$.page").value(0))
       .andExpect(jsonPath("$.size").value(20))
       .andExpect(jsonPath("$.totalElements").value(lostItemDtoList.size()))
@@ -143,9 +141,8 @@ public class LostItemControllerTest {
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.atcId").value(lostItemDto.getAtcId()))
       .andExpect(jsonPath("$.prdtClNm").value(lostItemDto.getPrdtClNm()))
-      .andExpect(jsonPath("$.lstYmd").value(fixedDateTime.toLocalDate().toString()))
-      .andExpect(jsonPath("$.lstPlace").value(lostItemDto.getLstPlace()))
-      .andExpect(jsonPath("$.sltSbjt").value(lostItemDto.getSltSbjt()));
+      .andExpect(jsonPath("$.lstYmd").value(fixedDateYmd))
+      .andExpect(jsonPath("$.lstPlace").value(lostItemDto.getLstPlace()));
   }
 
   @Test
@@ -161,9 +158,8 @@ public class LostItemControllerTest {
       .andExpect(jsonPath("$.message").value("Lost item created successfully"))
       .andExpect(jsonPath("$.data.atcId").value(lostItemDto.getAtcId()))
       .andExpect(jsonPath("$.data.prdtClNm").value(lostItemDto.getPrdtClNm()))
-      .andExpect(jsonPath("$.data.lstYmd").value(fixedDateTime.toLocalDate().toString()))
-      .andExpect(jsonPath("$.data.lstPlace").value(lostItemDto.getLstPlace()))
-      .andExpect(jsonPath("$.data.sltSbjt").value(lostItemDto.getSltSbjt()));
+      .andExpect(jsonPath("$.data.lstYmd").value(fixedDateYmd))
+      .andExpect(jsonPath("$.data.lstPlace").value(lostItemDto.getLstPlace()));
   }
 
   @Test
@@ -179,9 +175,8 @@ public class LostItemControllerTest {
       .andExpect(jsonPath("$.message").value("Lost item updated successfully"))
       .andExpect(jsonPath("$.data.atcId").value(lostItemDto.getAtcId()))
       .andExpect(jsonPath("$.data.prdtClNm").value(lostItemDto.getPrdtClNm()))
-      .andExpect(jsonPath("$.data.lstYmd").value(fixedDateTime.toLocalDate().toString()))
-      .andExpect(jsonPath("$.data.lstPlace").value(lostItemDto.getLstPlace()))
-      .andExpect(jsonPath("$.data.sltSbjt").value(lostItemDto.getSltSbjt()));
+      .andExpect(jsonPath("$.data.lstYmd").value(fixedDateYmd))
+      .andExpect(jsonPath("$.data.lstPlace").value(lostItemDto.getLstPlace()));
   }
 
   @Test
@@ -199,7 +194,7 @@ public class LostItemControllerTest {
       .andExpect(jsonPath("$.success").value(true))
       .andExpect(jsonPath("$.data", hasSize(1)))
       .andExpect(jsonPath("$.data[0].prdtClNm").value("전자기기"))
-      .andExpect(jsonPath("$.data[0].lstYmd").value(fixedDateTime.toLocalDate().toString()))
+      .andExpect(jsonPath("$.data[0].lstYmd").value(fixedDateYmd))
       .andExpect(jsonPath("$.page").value(0))
       .andExpect(jsonPath("$.size").value(20))
       .andExpect(jsonPath("$.totalElements").value(1))
@@ -221,8 +216,7 @@ public class LostItemControllerTest {
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.success").value(true))
       .andExpect(jsonPath("$.data", hasSize(1)))
-      .andExpect(jsonPath("$.data[0].sltSbjt").value(lostItemDto.getSltSbjt()))
-      .andExpect(jsonPath("$.data[0].lstYmd").value(fixedDateTime.toLocalDate().toString()))
+      .andExpect(jsonPath("$.data[0].lstYmd").value(fixedDateYmd))
       .andExpect(jsonPath("$.page").value(0))
       .andExpect(jsonPath("$.size").value(20))
       .andExpect(jsonPath("$.totalElements").value(1))

@@ -73,22 +73,21 @@ public class LostItemCollectionService {
             int totalSaved = 0;
             
             try {
+                // 날짜 범위 설정
                 String endYmdStr = LocalDate.now().minusDays(1).format(DateTimeFormatter.BASIC_ISO_DATE);
                 String startYmdStr = LocalDate.now().minusDays(7).format(DateTimeFormatter.BASIC_ISO_DATE);
-                // 사용자 요청: 페이지번호, 행수, 시작/종료일자 외 파라미터 사용 안함
+                // API 호출 및 응답 처리
                 PoliceApiLostItemResponse response = apiClient.fetchLostItems(1, 100, startYmdStr, endYmdStr);
-
-                if (response != null && response.getBody() != null && response.getBody().getItems() != null) {
-                    List<PoliceApiLostItem> lostItems = response.getBody().getItems();
+                List<PoliceApiLostItem> lostItems = response.getItems();
+                logger.info("[분실물] API에서 받은 총 데이터 수: {}건", lostItems.size());
+                if (!lostItems.isEmpty()) {
                     lostItemsFetchedCounter.increment(lostItems.size());
-                    
                     List<LostItem> mappedItems = mapper.mapList(lostItems);
-                    
                     int savedCount = processAndSaveItems(mappedItems);
                     lostItemsSavedCounter.increment(savedCount);
                     totalSaved += savedCount;
                 } else {
-                    logger.warn("Received null or empty response from Police API for lost items.");
+                    logger.warn("[분실물] API에서 빈 목록을 반환했습니다.");
                 }
             } catch (org.springframework.web.client.HttpClientErrorException.TooManyRequests e) {
                 logger.error("Too many requests error fetching lost items: {}", e.getMessage(), e);
@@ -138,10 +137,11 @@ public class LostItemCollectionService {
         boolean duplicateFound = false;
         while (!duplicateFound) {
             PoliceApiLostItemResponse response = apiClient.fetchLostItems(page, 100, startYmd, endYmd);
-            if (response == null || response.getBody() == null || response.getBody().getItems() == null || response.getBody().getItems().isEmpty()) {
+            List<PoliceApiLostItem> lostItems = response.getItems();
+            logger.info("[분실물] 페이지{} API 반환 데이터 수: {}건", page, lostItems.size());
+            if (lostItems.isEmpty()) {
                 break;
             }
-            List<PoliceApiLostItem> lostItems = response.getBody().getItems();
             List<LostItem> mappedItems = mapper.mapList(lostItems);
             for (LostItem item : mappedItems) {
                 if (!validator.isValidLostItem(item)) {
