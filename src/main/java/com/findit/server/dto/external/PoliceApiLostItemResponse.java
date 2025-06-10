@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Data
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "OpenAPI_ServiceResponse")
+@XmlRootElement(name = "response")
 public class PoliceApiLostItemResponse {
 
     @XmlElement(name = "header")

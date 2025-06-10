@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS lost_item;
+DROP TABLE IF EXISTS lost_items;
 
-CREATE TABLE lost_item (
+CREATE TABLE lost_items (
     atc_id VARCHAR(20) PRIMARY KEY,
     slt_prdt_nm VARCHAR(255),
     prdt_cl_nm VARCHAR(100),

@@ -14,6 +14,12 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Collections;
 import java.net.URI;
 import java.net.URISyntaxException;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
+import java.io.StringReader;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * 경찰청 API 클라이언트 서비스 외부 경찰청 API와 통신하여 분실물 및 습득물 데이터를 가져옴
@@ -91,19 +97,49 @@ public class PoliceApiClient {
     logger.info("Fetching lost items from Police API with URL: {}", uri);
     
     try {
-      ResponseEntity<PoliceApiLostItemResponse> response = restTemplate.getForEntity(uri, PoliceApiLostItemResponse.class);
-      
-      PoliceApiLostItemResponse lostItemResponse = response.getBody();
-      if (lostItemResponse != null) {
-        logger.info("Successfully fetched lost items. Total: {}, Page: {}, Rows Requested: {}",
-          lostItemResponse.getTotalCount(), lostItemResponse.getPageNo(), lostItemResponse.getNumOfRows());
-        return lostItemResponse;
-      } else {
-        logger.warn("Received null body from Police API for lost items. URL: {}", uri);
-        PoliceApiLostItemResponse emptyResponse = new PoliceApiLostItemResponse();
-        emptyResponse.setItems(Collections.emptyList());
-        return emptyResponse;
+      // Raw XML 응답 수신 및 로깅
+      ResponseEntity<String> xmlResponse = restTemplate.getForEntity(uri, String.class);
+      String xmlBody = xmlResponse.getBody();
+      if (xmlBody == null) xmlBody = "";
+      // BOM 제거 후 trim
+      xmlBody = xmlBody.replace("\uFEFF", "").trim();
+      logger.info("[Raw XML 분실물 응답]\n{}", xmlBody);
+      // JSON 응답 처리 (XML 대신 JSON이 반환된 경우)
+      if (xmlBody.startsWith("{")) {
+        try {
+          ObjectMapper objectMapper = new ObjectMapper();
+          JsonNode rootNode = objectMapper.readTree(xmlBody).path("response");
+          JsonNode headerNode = rootNode.path("header");
+          String resultCodeJson = headerNode.path("resultCode").asText();
+          String resultMsgJson = headerNode.path("resultMsg").asText();
+          PoliceApiLostItemResponse jsonResponse = new PoliceApiLostItemResponse();
+          PoliceApiLostItemResponse.Header header = new PoliceApiLostItemResponse.Header();
+          header.setResultCode(resultCodeJson);
+          header.setResultMsg(resultMsgJson);
+          jsonResponse.setHeader(header);
+          jsonResponse.setItems(Collections.emptyList());
+          return jsonResponse;
+        } catch (Exception e) {
+          logger.error("JSON 파싱 오류(분실물): {}. Response JSON:\n{}", e.getMessage(), xmlBody, e);
+          PoliceApiLostItemResponse errorResponseJson = new PoliceApiLostItemResponse();
+          errorResponseJson.setItems(Collections.emptyList());
+          return errorResponseJson;
+        }
       }
+      // 수동 JAXB 언마샬링
+      PoliceApiLostItemResponse lostItemResponse;
+      try {
+        JAXBContext jc = JAXBContext.newInstance(PoliceApiLostItemResponse.class);
+        Unmarshaller um = jc.createUnmarshaller();
+        lostItemResponse = (PoliceApiLostItemResponse) um.unmarshal(new StringReader(xmlBody));
+      } catch (JAXBException e) {
+        logger.error("XML 언마샬링 오류(분실물): {}. Response XML:\n{}", e.getMessage(), xmlBody, e);
+        lostItemResponse = new PoliceApiLostItemResponse();
+        lostItemResponse.setItems(Collections.emptyList());
+      }
+      logger.info("Parsed lost items. Total: {}, Page: {}, Rows: {}",
+        lostItemResponse.getTotalCount(), lostItemResponse.getPageNo(), lostItemResponse.getNumOfRows());
+      return lostItemResponse;
     } catch (RestClientException e) {
       logger.error("Error fetching lost items from Police API (URL: {}): {}", uri, e.getMessage(),
         e);
@@ -129,8 +165,7 @@ public class PoliceApiClient {
   @Retryable(value = {RestClientException.class}, maxAttempts = 3, backoff = @Backoff(delay = 1000))
   public PoliceApiFoundItemResponse fetchFoundItems(int pageNo, int numOfRows, String startYmd,
     String endYmd) {
-    logger.info("Fetching found items from Police API with URL: {}",
-      policeApiBaseUrl + foundItemListPath);
+    logger.info("Fetching found items from Police API with URL: {}", policeApiBaseUrl + foundItemListPath);
     
     // serviceKey는 인코딩하지 않고, properties에 저장된 값을 그대로 사용
     StringBuilder urlBuilder = new StringBuilder();
@@ -158,19 +193,49 @@ public class PoliceApiClient {
     logger.info("Fetching found items from Police API with URL: {}", uri);
     
     try {
-      ResponseEntity<PoliceApiFoundItemResponse> response = restTemplate.getForEntity(uri, PoliceApiFoundItemResponse.class);
-      
-      PoliceApiFoundItemResponse foundItemResponse = response.getBody();
-      if (foundItemResponse != null) {
-        logger.info("Successfully fetched found items. Total: {}, Page: {}, Rows: {}",
-          foundItemResponse.getTotalCount(), foundItemResponse.getPageNo(), foundItemResponse.getNumOfRows());
-        return foundItemResponse;
-      } else {
-        logger.warn("Received null body from Police API for found items. URL: {}", uri);
-        PoliceApiFoundItemResponse emptyResponse = new PoliceApiFoundItemResponse();
-        emptyResponse.setItems(Collections.emptyList());
-        return emptyResponse;
+      // Raw XML 응답 수신 및 로깅
+      ResponseEntity<String> xmlResponse = restTemplate.getForEntity(uri, String.class);
+      String xmlBody = xmlResponse.getBody();
+      if (xmlBody == null) xmlBody = "";
+      // BOM 제거 후 trim
+      xmlBody = xmlBody.replace("\uFEFF", "").trim();
+      logger.info("[Raw XML 습득물 응답]\n{}", xmlBody);
+      // JSON 응답 처리 (XML 대신 JSON이 반환된 경우)
+      if (xmlBody.startsWith("{")) {
+        try {
+          ObjectMapper objectMapper = new ObjectMapper();
+          JsonNode rootNode = objectMapper.readTree(xmlBody).path("response");
+          JsonNode headerNode = rootNode.path("header");
+          String resultCodeJson = headerNode.path("resultCode").asText();
+          String resultMsgJson = headerNode.path("resultMsg").asText();
+          PoliceApiFoundItemResponse jsonResponse = new PoliceApiFoundItemResponse();
+          PoliceApiFoundItemResponse.Header header = new PoliceApiFoundItemResponse.Header();
+          header.setResultCode(resultCodeJson);
+          header.setResultMsg(resultMsgJson);
+          jsonResponse.setHeader(header);
+          jsonResponse.setItems(Collections.emptyList());
+          return jsonResponse;
+        } catch (Exception e) {
+          logger.error("JSON 파싱 오류(습득물): {}. Response JSON:\n{}", e.getMessage(), xmlBody, e);
+          PoliceApiFoundItemResponse errorResponseJson = new PoliceApiFoundItemResponse();
+          errorResponseJson.setItems(Collections.emptyList());
+          return errorResponseJson;
+        }
       }
+      // 수동 JAXB 언마샬링
+      PoliceApiFoundItemResponse foundItemResponse;
+      try {
+        JAXBContext jc = JAXBContext.newInstance(PoliceApiFoundItemResponse.class);
+        Unmarshaller um = jc.createUnmarshaller();
+        foundItemResponse = (PoliceApiFoundItemResponse) um.unmarshal(new StringReader(xmlBody));
+      } catch (JAXBException e) {
+        logger.error("XML 언마샬링 오류(습득물): {}. Response XML:\n{}", e.getMessage(), xmlBody, e);
+        foundItemResponse = new PoliceApiFoundItemResponse();
+        foundItemResponse.setItems(Collections.emptyList());
+      }
+      logger.info("Parsed found items. Total: {}, Page: {}, Rows: {}",
+        foundItemResponse.getTotalCount(), foundItemResponse.getPageNo(), foundItemResponse.getNumOfRows());
+      return foundItemResponse;
     } catch (RestClientException e) {
       logger.error("Error fetching found items from Police API (URL: {}): {}", uri, e.getMessage(),
         e);

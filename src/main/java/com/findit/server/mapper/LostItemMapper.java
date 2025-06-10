@@ -18,8 +18,8 @@ public class LostItemMapper implements ApiMapper<PoliceApiLostItem, LostItem> {
         
         LostItem lostItem = new LostItem();
         
-        // PoliceApiLostItem의 lstGoodsSn (분실물순번)을 LostItem의 atcId (기본키)로 매핑합니다.
-        lostItem.setAtcId(source.getLstGoodsSn());
+        // PoliceApiLostItem의 atcId (경찰청 관리 ID) 를 LostItem의 atcId (기본키)로 매핑합니다.
+        lostItem.setAtcId(source.getId());
         
         // PoliceApiLostItem의 prdtClNm (물품분류)을 LostItem의 prdtClNm으로 매핑합니다.
         lostItem.setPrdtClNm(source.getItemType());
@@ -27,11 +27,17 @@ public class LostItemMapper implements ApiMapper<PoliceApiLostItem, LostItem> {
         // PoliceApiLostItem의 lstPlace (분실장소)을 LostItem의 lstPlace으로 매핑합니다.
         lostItem.setLstPlace(source.getLocation());
         
-        // 분실일자 문자열(yyyyMMdd)만 잘라서 저장
+        // PoliceApiLostItem의 lstPrdtNm (분실물명)을 LostItem의 lstPrdtNm으로 매핑합니다.
+        lostItem.setLstPrdtNm(source.getItemName());
+        
+        // PoliceApiLostItem의 lstSbjt (내용)을 LostItem의 lstSbjt으로 매핑합니다.
+        lostItem.setLstSbjt(source.getDescription());
+        
+        // 분실일자 문자열(yyyy-MM-dd) 형식 그대로 저장
         String rawDate = source.getLostDate();
         if (rawDate != null && !rawDate.trim().isEmpty()) {
             String trimmed = rawDate.trim();
-            lostItem.setLstYmd(trimmed.length() >= 8 ? trimmed.substring(0, 8) : trimmed);
+            lostItem.setLstYmd(trimmed.length() >= 10 ? trimmed.substring(0, 10) : trimmed);
         } else {
             lostItem.setLstYmd(null);
         }
@@ -43,9 +49,10 @@ public class LostItemMapper implements ApiMapper<PoliceApiLostItem, LostItem> {
         // lostItem.setTelephone(source.getTelephone()); // LostItem 엔티티에 telephone 필드 없음 (PoliceApiLostItem에는 tel로 존재)
         // lostItem.setStatus(source.getStatus()); // LostItem 엔티티에 status 필드 없음 (PoliceApiLostItem에는 csteSteNm으로 존재)
 
-        // LostItem 엔티티의 rnum 필드는 PoliceApiLostItem DTO에서 직접 매핑할 필드가 현재 없습니다.
-        // 필요시 API 응답을 확인하여 추가 매핑이 필요할 수 있습니다.
+        // PoliceApiLostItem의 rnum (행번호)을 LostItem의 rnum으로 매핑합니다.
         lostItem.setRnum(source.getRnum());
+
+        // 경찰청 API DTO id, itemType, location, lostDate가 잘 매핑됩니다.
 
         return lostItem;
     }

@@ -15,7 +15,7 @@ import java.util.List;
  */
 @Data
 @NoArgsConstructor
-@XmlRootElement(name = "OpenAPI_ServiceResponse")
+@XmlRootElement(name = "response")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PoliceApiFoundItemResponse {
 

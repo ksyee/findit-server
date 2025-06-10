@@ -1,5 +1,5 @@
--- Test data for lost_item table
-INSERT INTO lost_item (atc_id, slt_prdt_nm, prdt_cl_nm, lst_place, lst_ymd, slt_sbjt, rnum, created_at, updated_at) VALUES
+-- Test data for lost_items table
+INSERT INTO lost_items (atc_id, slt_prdt_nm, prdt_cl_nm, lst_place, lst_ymd, slt_sbjt, rnum, created_at, updated_at) VALUES
 ('L20240526001', '아이폰 13 프로', '전자기기', '서울시 강남구', '2024-05-26 10:00:00', '아이폰 13 프로 블랙 색상', '001', '2024-05-26 10:00:00', '2024-05-26 10:00:00'),
 ('L20240526002', '가죽지갑', '지갑', '서울시 서초구', '2024-05-26 11:00:00', '가죽지갑 검정색', '002', '2024-05-26 11:00:00', '2024-05-26 11:00:00'),
 ('L20240526003', '갤럭시 버즈', '전자기기', '서울시 강서구', '2024-05-26 12:00:00', '삼성 갤럭시 버즈 프로', '003', '2024-05-26 12:00:00', '2024-05-26 12:00:00'),

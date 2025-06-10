@@ -20,6 +20,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 /**
  * 습득물 데이터 수집 서비스 경찰청 API에서 습득물 데이터를 수집하여 데이터베이스에 저장
  */
@@ -35,25 +38,29 @@ public class FoundItemCollectionService {
   private final Counter foundItemsFetchedCounter;
   private final Counter foundItemsSavedCounter;
   private final Timer fetchTimer;
+  private final ObjectMapper objectMapper;
   
   /**
    * 생성자
    *
-   * @param apiClient  경찰청 API 클라이언트
-   * @param repository 습득물 저장소
-   * @param mapper     습득물 매퍼
-   * @param validator  데이터 유효성 검증기
-   * @param registry   메트릭 레지스트리
+   * @param apiClient    경찰청 API 클라이언트
+   * @param repository   습득물 저장소
+   * @param mapper       습득물 매퍼
+   * @param validator    데이터 유효성 검증기
+   * @param registry     메트릭 레지스트리
+   * @param objectMapper JSON 객체 매퍼
    */
   public FoundItemCollectionService(PoliceApiClient apiClient,
     FoundItemRepository repository,
     FoundItemMapper mapper,
     DataValidator validator,
-    MeterRegistry registry) {
+    MeterRegistry registry,
+    ObjectMapper objectMapper) {
     this.apiClient = apiClient;
     this.repository = repository;
     this.mapper = mapper;
     this.validator = validator;
+    this.objectMapper = objectMapper;
     
     // 메트릭 등록
     this.foundItemsFetchedCounter = registry.counter("api.found_items.fetched");
@@ -79,7 +86,14 @@ public class FoundItemCollectionService {
         String endYmdStr = LocalDate.now().minusDays(1).format(DateTimeFormatter.BASIC_ISO_DATE);
         String startYmdStr = LocalDate.now().minusDays(7).format(DateTimeFormatter.BASIC_ISO_DATE);
         // API 호출 및 응답 처리
-        PoliceApiFoundItemResponse response = apiClient.fetchFoundItems(1, 100, startYmdStr, endYmdStr);
+        PoliceApiFoundItemResponse response = apiClient.fetchFoundItems(1, 100, startYmdStr,
+          endYmdStr);
+        try {
+          String json = objectMapper.writeValueAsString(response);
+          logger.info("[습득물 DTO JSON]: {}", json);
+        } catch (JsonProcessingException e) {
+          logger.error("습득물 DTO JSON 변환 오류: {}", e.getMessage(), e);
+        }
         List<PoliceApiFoundItem> foundItems = response.getItems();
         logger.info("[습득물] API에서 받은 총 데이터 수: {}건", foundItems.size());
         if (!foundItems.isEmpty()) {
@@ -127,6 +141,7 @@ public class FoundItemCollectionService {
   
   /**
    * (스케줄러용) 중복 발견 전까지 습득물 데이터를 저장
+   *
    * @return 저장된 건수
    */
   public int collectAndSaveUniqueItems() {
@@ -136,28 +151,37 @@ public class FoundItemCollectionService {
     String endYmd = now.format(DateTimeFormatter.BASIC_ISO_DATE);
     String startYmd = now.minusDays(7).format(DateTimeFormatter.BASIC_ISO_DATE);
     int page = 1;
-    boolean duplicateFound = false;
-    while (!duplicateFound) {
+    while (true) {
       PoliceApiFoundItemResponse response = apiClient.fetchFoundItems(page, 100, startYmd, endYmd);
+      try {
+        String json = objectMapper.writeValueAsString(response);
+        logger.info("[습득물 DTO JSON, page {}]: {}", page, json);
+      } catch (JsonProcessingException e) {
+        logger.error("습득물 DTO JSON 변환 오류: {}", e.getMessage(), e);
+      }
       List<PoliceApiFoundItem> foundItems = response.getItems();
       logger.info("[습득물] 페이지{} API 반환 데이터 수: {}건", page, foundItems.size());
       if (foundItems.isEmpty()) {
         break;
       }
       List<FoundItem> mappedItems = mapper.mapList(foundItems);
+      int savedThisPage = 0;
       for (FoundItem item : mappedItems) {
         if (!validator.isValidFoundItem(item)) {
           logger.warn("Skipping invalid item: {}", item);
           continue;
         }
         if (repository.existsByAtcId(item.getAtcId())) {
-          duplicateFound = true;
-          break;
+          continue;
         }
         repository.save(item);
         totalSaved++;
+        savedThisPage++;
       }
-      if (!duplicateFound) page++;
+      if (savedThisPage == 0) {
+        break;
+      }
+      page++;
     }
     logger.info("[습득물] 저장 완료: {}건", totalSaved);
     return totalSaved;

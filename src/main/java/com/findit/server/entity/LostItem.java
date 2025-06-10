@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "lost_item")
+@Table(name = "lost_items")
 public class LostItem {
     
     @Id
@@ -18,8 +18,14 @@ public class LostItem {
     @Column(name = "lst_place")
     private String lstPlace;
     
-    @Column(name = "lst_ymd", length = 8)
+    @Column(name = "lst_ymd", length = 10)
     private String lstYmd;
+    
+    @Column(name = "lst_prdt_nm")
+    private String lstPrdtNm;
+
+    @Column(name = "lst_sbjt", columnDefinition = "TEXT")
+    private String lstSbjt;
     
     @Column(name = "rnum")
     private String rnum;
@@ -39,6 +45,14 @@ public class LostItem {
     
     public String getLstYmd() {
         return lstYmd;
+    }
+    
+    public String getLstPrdtNm() {
+        return lstPrdtNm;
+    }
+
+    public String getLstSbjt() {
+        return lstSbjt;
     }
     
     public String getRnum() {
@@ -62,6 +76,14 @@ public class LostItem {
         this.lstYmd = lstYmd;
     }
     
+    public void setLstPrdtNm(String lstPrdtNm) {
+        this.lstPrdtNm = lstPrdtNm;
+    }
+
+    public void setLstSbjt(String lstSbjt) {
+        this.lstSbjt = lstSbjt;
+    }
+    
     public void setRnum(String rnum) {
         this.rnum = rnum;
     }
@@ -70,11 +92,13 @@ public class LostItem {
     public LostItem() {}
 
     // 모든 필드를 포함한 생성자
-    public LostItem(String atcId, String prdtClNm, String lstPlace, String lstYmd, String rnum) {
+    public LostItem(String atcId, String prdtClNm, String lstPlace, String lstYmd, String lstPrdtNm, String lstSbjt, String rnum) {
         this.atcId = atcId;
         this.prdtClNm = prdtClNm;
         this.lstPlace = lstPlace;
         this.lstYmd = lstYmd;
+        this.lstPrdtNm = lstPrdtNm;
+        this.lstSbjt = lstSbjt;
         this.rnum = rnum;
     }
     
@@ -88,6 +112,8 @@ public class LostItem {
         private String prdtClNm;
         private String lstYmd;
         private String lstPlace;
+        private String lstPrdtNm;
+        private String lstSbjt;
         private String rnum;
         
         public Builder atcId(String atcId) {
@@ -110,6 +136,16 @@ public class LostItem {
             return this;
         }
         
+        public Builder lstPrdtNm(String lstPrdtNm) {
+            this.lstPrdtNm = lstPrdtNm;
+            return this;
+        }
+
+        public Builder lstSbjt(String lstSbjt) {
+            this.lstSbjt = lstSbjt;
+            return this;
+        }
+        
         public Builder rnum(String rnum) {
             this.rnum = rnum;
             return this;
@@ -121,6 +157,8 @@ public class LostItem {
             lostItem.prdtClNm = this.prdtClNm;
             lostItem.lstPlace = this.lstPlace;
             lostItem.lstYmd = this.lstYmd;
+            lostItem.lstPrdtNm = this.lstPrdtNm;
+            lostItem.lstSbjt = this.lstSbjt;
             lostItem.rnum = this.rnum;
             return lostItem;
         }

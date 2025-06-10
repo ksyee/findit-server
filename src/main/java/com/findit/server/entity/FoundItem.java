@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
  * 습득물 정보를 나타내는 엔티티 클래스
  */
 @Entity
-@Table(name = "found_item")
+@Table(name = "found_items")
 public class FoundItem {
   
   /**
@@ -32,7 +32,7 @@ public class FoundItem {
   /**
    * 습득일자
    */
-  @Column(name = "fd_ymd", length = 8)
+  @Column(name = "fd_ymd", length = 10)
   private String fdYmd;
   
   /**
