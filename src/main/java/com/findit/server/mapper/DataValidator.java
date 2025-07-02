@@ -5,16 +5,16 @@ import com.findit.server.entity.LostItem;
 import org.springframework.stereotype.Component;
 
 /**
- * ub370uc774ud130 uc720ud6a8uc131 uac80uc99d uc720ud2f8ub9acud2f0
+ * 데이터 유효성 검증 유틸리티
  */
 @Component
 public class DataValidator {
     
     /**
-     * ubd84uc2e4ubb3c uc5d4ud2f0ud2f0uc758 uc720ud6a8uc131 uac80uc99d
+     * 분실물 엔티티의 유효성 검증
      * 
-     * @param item ubd84uc2e4ubb3c uc5d4ud2f0ud2f0
-     * @return uc720ud6a8uc131 uac80uc99d uacb0uacfc
+     * @param item 분실물 엔티티
+     * @return 유효성 검증 결과
      */
     public boolean isValidLostItem(LostItem item) {
         return item != null &&
@@ -24,10 +24,10 @@ public class DataValidator {
     }
     
     /**
-     * uc2b5ub4ddubb3c uc5d4ud2f0ud2f0uc758 uc720ud6a8uc131 uac80uc99d
+     * 습득물 엔티티의 유효성 검증
      * 
-     * @param item uc2b5ub4ddubb3c uc5d4ud2f0ud2f0
-     * @return uc720ud6a8uc131 uac80uc99d uacb0uacfc
+     * @param item 습득물 엔티티
+     * @return 유효성 검증 결과
      */
     public boolean isValidFoundItem(FoundItem item) {
         return item != null &&
@@ -37,10 +37,10 @@ public class DataValidator {
     }
     
     /**
-     * ubd84uc2e4ubb3c uc5d4ud2f0ud2f0uc758 uc0c1uc138 uc720ud6a8uc131 uac80uc99d
+     * 분실물 엔티티의 상세 유효성 검증
      * 
-     * @param item ubd84uc2e4ubb3c uc5d4ud2f0ud2f0
-     * @return uc720ud6a8uc131 uac80uc99d uacb0uacfc
+     * @param item 분실물 엔티티
+     * @return 유효성 검증 결과
      */
     public boolean isDetailedValidLostItem(LostItem item) {
         return isValidLostItem(item) &&
@@ -49,10 +49,10 @@ public class DataValidator {
     }
     
     /**
-     * uc2b5ub4ddubb3c uc5d4ud2f0ud2f0uc758 uc0c1uc138 uc720ud6a8uc131 uac80uc99d
+     * 습득물 엔티티의 상세 유효성 검증
      * 
-     * @param item uc2b5ub4ddubb3c uc5d4ud2f0ud2f0
-     * @return uc720ud6a8uc131 uac80uc99d uacb0uacfc
+     * @param item 습득물 엔티티
+     * @return 유효성 검증 결과
      */
     public boolean isDetailedValidFoundItem(FoundItem item) {
         return isValidFoundItem(item) &&

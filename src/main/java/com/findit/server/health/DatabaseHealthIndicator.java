@@ -6,8 +6,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 /**
- * ub370uc774ud130ubca0uc774uc2a4 ud5ecuc2a4 uccb4ud06c uc778ub514ucf00uc774ud130
- * ub370uc774ud130ubca0uc774uc2a4 uc5f0uacb0 ubc0f uc0c1ud0dcub97c uac80uc0acud558uc5ec ud5ecuc2a4 uc815ubcf4 uc81cuacf5
+ * 데이터베이스 헬스 체크 인디케이터
+ * 데이터베이스 연결 및 상태를 검사하여 헬스 정보 제공
  */
 @Component
 public class DatabaseHealthIndicator implements HealthIndicator {
@@ -15,23 +15,23 @@ public class DatabaseHealthIndicator implements HealthIndicator {
     private final JdbcTemplate jdbcTemplate;
 
     /**
-     * uc0dduc131uc790
+     * 생성자
      * 
-     * @param jdbcTemplate JDBC ud15cud50cub9bf
+     * @param jdbcTemplate JDBC 템플릿
      */
     public DatabaseHealthIndicator(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     /**
-     * ub370uc774ud130ubca0uc774uc2a4 ud5ecuc2a4 uc0c1ud0dc uac80uc0ac
+     * 데이터베이스 헬스 상태 검사
      * 
-     * @return ud5ecuc2a4 uc0c1ud0dc uc815ubcf4
+     * @return 헬스 상태 정보
      */
     @Override
     public Health health() {
         try {
-            // ub370uc774ud130ubca0uc774uc2a4 uc0c1ud0dc uac80uc0acub97c uc704ud55c uac04ub2e8ud55c ucffcub9ac uc2e4ud589
+            // 데이터베이스 상태 검사를 위한 간단한 쿼리 실행
             int result = jdbcTemplate.queryForObject("SELECT 1", Integer.class);
             
             if (result == 1) {

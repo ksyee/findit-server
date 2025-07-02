@@ -5,53 +5,68 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * uacbducc30uccad API uc2b5ub4ddubb3c uc544uc774ud15c DTO
  */
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "item") 
 public class PoliceApiFoundItem {
 
+    @JsonProperty("atcId")
     @XmlElement(name = "atcId")
-    private String id; 
+    private String atcId; 
 
+    @JsonProperty("fdPrdtNm")
     @XmlElement(name = "fdPrdtNm")
-    private String itemName; 
+    private String fdPrdtNm; 
 
+    @JsonProperty("prdtClNm")
     @XmlElement(name = "prdtClNm")
-    private String itemType; 
+    private String prdtClNm; 
 
+    @JsonProperty("fdPlace")
     @XmlElement(name = "fdPlace")
-    private String location; 
+    private String fdPlace; 
 
+    @JsonProperty("fdYmd")
     @XmlElement(name = "fdYmd")
-    private String foundDate; 
+    private String fdYmd; 
 
+    @JsonProperty("depPlace") 
     @XmlElement(name = "depPlace") 
-    private String storagePlaceName; 
+    private String depPlace; 
 
+    @JsonProperty("addr")
     @XmlElement(name = "addr")
-    private String storageAddress; 
+    private String addr; 
 
+    @JsonProperty("tel")
     @XmlElement(name = "tel")
-    private String storageContact; 
+    private String tel; 
 
-    @XmlElement(name = "csteSteNm") 
+    @JsonProperty("csteSteNm") 
                                   // 
                                   // Lost API 
-    private String status; 
+    private String csteSteNm; 
 
+    @JsonProperty("fdFilePathImg")
     @XmlElement(name = "fdFilePathImg")
-    private String imageUrl; 
+    private String fdFilePathImg; 
 
+    @JsonProperty("fdSbjt")
     @XmlElement(name = "fdSbjt")
-    private String description; 
+    private String fdSbjt; 
 
+    @JsonProperty("clrNm")
     @XmlElement(name = "clrNm")
-    private String color; 
+    private String clrNm; 
 
+    @JsonProperty("fdSn")
     @XmlElement(name = "fdSn")
     private String fdSn; 
 
@@ -60,73 +75,73 @@ public class PoliceApiFoundItem {
     }
     
     // ubaa8ub4e0 ud544ub4dcub97c ud3ecud568ud55c uc0dduc131uc790
-    public PoliceApiFoundItem(String id, String itemName, String itemType, String location, 
-                             String foundDate, String status, String imageUrl, 
-                             String description, String storagePlaceName, 
-                             String storageAddress, String storageContact,
-                             String color, String fdSn) {
-        this.id = id;
-        this.itemName = itemName;
-        this.itemType = itemType;
-        this.location = location;
-        this.foundDate = foundDate;
-        this.status = status;
-        this.imageUrl = imageUrl;
-        this.description = description;
-        this.storagePlaceName = storagePlaceName;
-        this.storageAddress = storageAddress;
-        this.storageContact = storageContact;
-        this.color = color;
+    public PoliceApiFoundItem(String atcId, String fdPrdtNm, String prdtClNm, String fdPlace, 
+                             String fdYmd, String csteSteNm, String fdFilePathImg, 
+                             String fdSbjt, String depPlace, 
+                             String addr, String tel,
+                             String clrNm, String fdSn) {
+        this.atcId = atcId;
+        this.fdPrdtNm = fdPrdtNm;
+        this.prdtClNm = prdtClNm;
+        this.fdPlace = fdPlace;
+        this.fdYmd = fdYmd;
+        this.csteSteNm = csteSteNm;
+        this.fdFilePathImg = fdFilePathImg;
+        this.fdSbjt = fdSbjt;
+        this.depPlace = depPlace;
+        this.addr = addr;
+        this.tel = tel;
+        this.clrNm = clrNm;
         this.fdSn = fdSn;
     }
     
     // Getters
-    public String getId() {
-        return id;
+    public String getAtcId() {
+        return atcId;
     }
     
-    public String getItemName() {
-        return itemName;
+    public String getFdPrdtNm() {
+        return fdPrdtNm;
     }
     
-    public String getItemType() {
-        return itemType;
+    public String getPrdtClNm() {
+        return prdtClNm;
     }
     
-    public String getLocation() {
-        return location;
+    public String getFdPlace() {
+        return fdPlace;
     }
     
-    public String getFoundDate() {
-        return foundDate;
+    public String getFdYmd() {
+        return fdYmd;
     }
     
-    public String getStatus() {
-        return status;
+    public String getCsteSteNm() {
+        return csteSteNm;
     }
     
-    public String getImageUrl() {
-        return imageUrl;
+    public String getFdFilePathImg() {
+        return fdFilePathImg;
     }
     
-    public String getDescription() {
-        return description;
+    public String getFdSbjt() {
+        return fdSbjt;
     }
     
-    public String getStoragePlaceName() {
-        return storagePlaceName;
+    public String getDepPlace() {
+        return depPlace;
     }
     
-    public String getStorageAddress() {
-        return storageAddress;
+    public String getAddr() {
+        return addr;
     }
     
-    public String getStorageContact() {
-        return storageContact;
+    public String getTel() {
+        return tel;
     }
     
-    public String getColor() {
-        return color;
+    public String getClrNm() {
+        return clrNm;
     }
     
     public String getFdSn() {
@@ -134,52 +149,52 @@ public class PoliceApiFoundItem {
     }
     
     // Setters
-    public void setId(String id) {
-        this.id = id;
+    public void setAtcId(String atcId) {
+        this.atcId = atcId;
     }
     
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
+    public void setFdPrdtNm(String fdPrdtNm) {
+        this.fdPrdtNm = fdPrdtNm;
     }
     
-    public void setItemType(String itemType) {
-        this.itemType = itemType;
+    public void setPrdtClNm(String prdtClNm) {
+        this.prdtClNm = prdtClNm;
     }
     
-    public void setLocation(String location) {
-        this.location = location;
+    public void setFdPlace(String fdPlace) {
+        this.fdPlace = fdPlace;
     }
     
-    public void setFoundDate(String foundDate) {
-        this.foundDate = foundDate;
+    public void setFdYmd(String fdYmd) {
+        this.fdYmd = fdYmd;
     }
     
-    public void setStatus(String status) {
-        this.status = status;
+    public void setCsteSteNm(String csteSteNm) {
+        this.csteSteNm = csteSteNm;
     }
     
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setFdFilePathImg(String fdFilePathImg) {
+        this.fdFilePathImg = fdFilePathImg;
     }
     
-    public void setDescription(String description) {
-        this.description = description;
+    public void setFdSbjt(String fdSbjt) {
+        this.fdSbjt = fdSbjt;
     }
     
-    public void setStoragePlaceName(String storagePlaceName) {
-        this.storagePlaceName = storagePlaceName;
+    public void setDepPlace(String depPlace) {
+        this.depPlace = depPlace;
     }
     
-    public void setStorageAddress(String storageAddress) {
-        this.storageAddress = storageAddress;
+    public void setAddr(String addr) {
+        this.addr = addr;
     }
     
-    public void setStorageContact(String storageContact) {
-        this.storageContact = storageContact;
+    public void setTel(String tel) {
+        this.tel = tel;
     }
     
-    public void setColor(String color) {
-        this.color = color;
+    public void setClrNm(String clrNm) {
+        this.clrNm = clrNm;
     }
     
     public void setFdSn(String fdSn) {
@@ -192,77 +207,77 @@ public class PoliceApiFoundItem {
     }
     
     public static class Builder {
-        private String id;
-        private String itemName;
-        private String itemType;
-        private String location;
-        private String foundDate;
-        private String status;
-        private String imageUrl;
-        private String description;
-        private String storagePlaceName;
-        private String storageAddress;
-        private String storageContact;
-        private String color;
+        private String atcId;
+        private String fdPrdtNm;
+        private String prdtClNm;
+        private String fdPlace;
+        private String fdYmd;
+        private String csteSteNm;
+        private String fdFilePathImg;
+        private String fdSbjt;
+        private String depPlace;
+        private String addr;
+        private String tel;
+        private String clrNm;
         private String fdSn;
         
-        public Builder id(String id) {
-            this.id = id;
+        public Builder atcId(String atcId) {
+            this.atcId = atcId;
             return this;
         }
         
-        public Builder itemName(String itemName) {
-            this.itemName = itemName;
+        public Builder fdPrdtNm(String fdPrdtNm) {
+            this.fdPrdtNm = fdPrdtNm;
             return this;
         }
         
-        public Builder itemType(String itemType) {
-            this.itemType = itemType;
+        public Builder prdtClNm(String prdtClNm) {
+            this.prdtClNm = prdtClNm;
             return this;
         }
         
-        public Builder location(String location) {
-            this.location = location;
+        public Builder fdPlace(String fdPlace) {
+            this.fdPlace = fdPlace;
             return this;
         }
         
-        public Builder foundDate(String foundDate) {
-            this.foundDate = foundDate;
+        public Builder fdYmd(String fdYmd) {
+            this.fdYmd = fdYmd;
             return this;
         }
         
-        public Builder status(String status) {
-            this.status = status;
+        public Builder csteSteNm(String csteSteNm) {
+            this.csteSteNm = csteSteNm;
             return this;
         }
         
-        public Builder imageUrl(String imageUrl) {
-            this.imageUrl = imageUrl;
+        public Builder fdFilePathImg(String fdFilePathImg) {
+            this.fdFilePathImg = fdFilePathImg;
             return this;
         }
         
-        public Builder description(String description) {
-            this.description = description;
+        public Builder fdSbjt(String fdSbjt) {
+            this.fdSbjt = fdSbjt;
             return this;
         }
         
-        public Builder storagePlaceName(String storagePlaceName) {
-            this.storagePlaceName = storagePlaceName;
+        public Builder depPlace(String depPlace) {
+            this.depPlace = depPlace;
             return this;
         }
         
-        public Builder storageAddress(String storageAddress) {
-            this.storageAddress = storageAddress;
+        public Builder addr(String addr) {
+            this.addr = addr;
             return this;
         }
         
-        public Builder storageContact(String storageContact) {
-            this.storageContact = storageContact;
+        public Builder tel(String tel) {
+            this.tel = tel;
             return this;
         }
         
-        public Builder color(String color) {
-            this.color = color;
+        public Builder clrNm(String clrNm) {
+            this.clrNm = clrNm;
             return this;
         }
         
@@ -273,18 +288,18 @@ public class PoliceApiFoundItem {
         
         public PoliceApiFoundItem build() {
             PoliceApiFoundItem item = new PoliceApiFoundItem();
-            item.id = this.id;
-            item.itemName = this.itemName;
-            item.itemType = this.itemType;
-            item.location = this.location;
-            item.foundDate = this.foundDate;
-            item.status = this.status;
-            item.imageUrl = this.imageUrl;
-            item.description = this.description;
-            item.storagePlaceName = this.storagePlaceName;
-            item.storageAddress = this.storageAddress;
-            item.storageContact = this.storageContact;
-            item.color = this.color;
+            item.atcId = this.atcId;
+            item.fdPrdtNm = this.fdPrdtNm;
+            item.prdtClNm = this.prdtClNm;
+            item.fdPlace = this.fdPlace;
+            item.fdYmd = this.fdYmd;
+            item.csteSteNm = this.csteSteNm;
+            item.fdFilePathImg = this.fdFilePathImg;
+            item.fdSbjt = this.fdSbjt;
+            item.depPlace = this.depPlace;
+            item.addr = this.addr;
+            item.tel = this.tel;
+            item.clrNm = this.clrNm;
             item.fdSn = this.fdSn;
             return item;
         }

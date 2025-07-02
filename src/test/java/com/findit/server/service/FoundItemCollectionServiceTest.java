@@ -49,7 +49,7 @@ class FoundItemCollectionServiceTest {
     void testCollectAndSaveUniqueItems() {
         // given: mock API 응답 구성
         PoliceApiFoundItem item = new PoliceApiFoundItem();
-        item.setId("MOCK_ID");
+        item.setAtcId("MOCK_ID");
         PoliceApiFoundItemResponse response = new PoliceApiFoundItemResponse();
         response.setItems(Collections.singletonList(item));
         PoliceApiFoundItemResponse emptyResponse = new PoliceApiFoundItemResponse();
@@ -57,7 +57,7 @@ class FoundItemCollectionServiceTest {
         Mockito.when(policeApiClient.fetchFoundItems(anyInt(), anyInt(), anyString(), anyString()))
                 .thenReturn(response)
                 .thenReturn(emptyResponse);
-        int saved = foundItemCollectionService.collectAndSaveUniqueItems();
+        int saved = foundItemCollectionService.collectAndSaveUniqueItems().size();
         System.out.println("Saved found items: " + saved);
         assertTrue(saved >= 0);
     }

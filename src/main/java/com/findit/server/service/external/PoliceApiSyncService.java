@@ -80,16 +80,17 @@ public class PoliceApiSyncService {
                 int updatedInThisPage = 0;
 
                 for (PoliceApiLostItem apiItem : apiItems) {
-                    if (!StringUtils.hasText(apiItem.getLstGoodsSn())) {
-                        logger.warn("Skipping lost item with null or empty LST_GOODS_SN: {}", apiItem);
+                    if (!StringUtils.hasText(apiItem.getLostItemId())) {
+                        logger.warn("Skipping lost item with null or empty atc_id: {}", apiItem);
                         continue;
                     }
-                    LostItem existingItem = lostItemRepository.findByAtcId(apiItem.getLstGoodsSn()).orElse(null);
+                    LostItem existingItem = lostItemRepository.findByAtcId(apiItem.getLostItemId()).orElse(null);
                     LostItem lostItemToSave = (existingItem != null) ? existingItem : new LostItem();
 
-                    lostItemToSave.setAtcId(apiItem.getLstGoodsSn());
-                    lostItemToSave.setPrdtClNm(apiItem.getItemType()); 
-                    lostItemToSave.setLstPlace(apiItem.getLocation()); 
+                    lostItemToSave.setAtcId(apiItem.getLostItemId());
+                    lostItemToSave.setPrdtClNm(apiItem.getLostItemCategory()); 
+                    lostItemToSave.setLstPlace(apiItem.getLostPlace()); 
+                    lostItemToSave.setLstPrdtNm(apiItem.getLostItemName());
                     
                     // PoliceApiLostItem의 lstYmd (분실일자) 매핑
                     String rawDate = apiItem.getLostDate();
@@ -100,8 +101,8 @@ public class PoliceApiSyncService {
                         lostItemToSave.setLstYmd(null);
                     }
 
-                    if (apiItem.getRnum() != null) { 
-                        lostItemToSave.setRnum(apiItem.getRnum());
+                    if (apiItem.getLostItemRnum() != null) { 
+                        lostItemToSave.setRnum(apiItem.getLostItemRnum());
                     }
 
                     lostItemRepository.save(lostItemToSave);
@@ -158,14 +159,14 @@ public class PoliceApiSyncService {
                     
                     // API 응답에서 필요한 데이터를 엔티티에 매핑
                     FoundItem foundItemToSave = FoundItem.builder()
-                        .atcId(apiItem.getFdSn()) // FD_SN을 atcId로 사용
-                        .fdPrdtNm(apiItem.getItemName())
-                        .prdtClNm(apiItem.getItemType())
-                        .fdYmd(apiItem.getFoundDate()) // 문자열 형식 그대로 저장
-                        .fdSbjt(apiItem.getDescription())
-                        .fdFilePathImg(apiItem.getImageUrl())
-                        .depPlace(apiItem.getStoragePlaceName())
-                        .clrNm(apiItem.getColor())
+                        .atcId(apiItem.getAtcId()) // FD_SN을 atcId로 사용
+                        .fdPrdtNm(apiItem.getFdPrdtNm())
+                        .prdtClNm(apiItem.getPrdtClNm())
+                        .fdYmd(apiItem.getFdYmd()) // 문자열 형식 그대로 저장
+                        .fdSbjt(apiItem.getFdSbjt())
+                        .fdFilePathImg(apiItem.getFdFilePathImg())
+                        .depPlace(apiItem.getDepPlace())
+                        .clrNm(apiItem.getClrNm())
                         .fdSn(apiItem.getFdSn())
                         .build();
 
@@ -200,9 +201,9 @@ public class PoliceApiSyncService {
         }
         try {
             LocalDate date = LocalDate.parse(dateStr.trim(), API_DATE_FORMATTER);
-            return date.atStartOfDay(); 
+            return date.atStartOfDay(); // Midnight (start of day)
         } catch (DateTimeParseException e) {
-            logger.error("Error parsing date string '{}' for {}: {}. Returning null.", dateStr, contextInfo, e.getMessage());
+            logger.error("Error parsing date string [{}] for {}: {}", dateStr, contextInfo, e.getMessage());
             return null;
         }
     }

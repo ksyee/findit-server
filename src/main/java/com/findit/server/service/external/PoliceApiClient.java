@@ -2,6 +2,8 @@ package com.findit.server.service.external;
 
 import com.findit.server.dto.external.PoliceApiFoundItemResponse;
 import com.findit.server.dto.external.PoliceApiLostItemResponse;
+import com.findit.server.dto.external.PoliceApiLostItem;
+import com.findit.server.dto.external.PoliceApiFoundItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +22,9 @@ import jakarta.xml.bind.Unmarshaller;
 import java.io.StringReader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 경찰청 API 클라이언트 서비스 외부 경찰청 API와 통신하여 분실물 및 습득물 데이터를 가져옴
@@ -108,16 +113,33 @@ public class PoliceApiClient {
       if (xmlBody.startsWith("{")) {
         try {
           ObjectMapper objectMapper = new ObjectMapper();
-          JsonNode rootNode = objectMapper.readTree(xmlBody).path("response");
-          JsonNode headerNode = rootNode.path("header");
-          String resultCodeJson = headerNode.path("resultCode").asText();
-          String resultMsgJson = headerNode.path("resultMsg").asText();
+          JsonNode root = objectMapper.readTree(xmlBody);
+          JsonNode respNode = root.has("response") ? root.get("response") : root;
+          JsonNode headerNode = respNode.path("header");
           PoliceApiLostItemResponse jsonResponse = new PoliceApiLostItemResponse();
           PoliceApiLostItemResponse.Header header = new PoliceApiLostItemResponse.Header();
-          header.setResultCode(resultCodeJson);
-          header.setResultMsg(resultMsgJson);
+          header.setResultCode(headerNode.path("resultCode").asText());
+          header.setResultMsg(headerNode.path("resultMsg").asText());
           jsonResponse.setHeader(header);
-          jsonResponse.setItems(Collections.emptyList());
+          // 아이템 리스트 추출
+          List<PoliceApiLostItem> itemList = new ArrayList<>();
+          JsonNode itemsNode = respNode.path("body").path("items").path("item");
+          if (itemsNode.isArray()) {
+            for (JsonNode itemNode : itemsNode) {
+              try {
+                itemList.add(objectMapper.treeToValue(itemNode, PoliceApiLostItem.class));
+              } catch (JsonProcessingException ex) {
+                logger.error("JSON 아이템 변환 오류: {}", ex.getMessage(), ex);
+              }
+            }
+          } else if (itemsNode.isObject()) {
+            try {
+              itemList.add(objectMapper.treeToValue(itemsNode, PoliceApiLostItem.class));
+            } catch (JsonProcessingException ex) {
+              logger.error("JSON 아이템 변환 오류: {}", ex.getMessage(), ex);
+            }
+          }
+          jsonResponse.setItems(itemList);
           return jsonResponse;
         } catch (Exception e) {
           logger.error("JSON 파싱 오류(분실물): {}. Response JSON:\n{}", e.getMessage(), xmlBody, e);
@@ -204,16 +226,33 @@ public class PoliceApiClient {
       if (xmlBody.startsWith("{")) {
         try {
           ObjectMapper objectMapper = new ObjectMapper();
-          JsonNode rootNode = objectMapper.readTree(xmlBody).path("response");
-          JsonNode headerNode = rootNode.path("header");
-          String resultCodeJson = headerNode.path("resultCode").asText();
-          String resultMsgJson = headerNode.path("resultMsg").asText();
+          JsonNode root = objectMapper.readTree(xmlBody);
+          JsonNode respNode = root.has("response") ? root.get("response") : root;
+          JsonNode headerNode = respNode.path("header");
           PoliceApiFoundItemResponse jsonResponse = new PoliceApiFoundItemResponse();
           PoliceApiFoundItemResponse.Header header = new PoliceApiFoundItemResponse.Header();
-          header.setResultCode(resultCodeJson);
-          header.setResultMsg(resultMsgJson);
+          header.setResultCode(headerNode.path("resultCode").asText());
+          header.setResultMsg(headerNode.path("resultMsg").asText());
           jsonResponse.setHeader(header);
-          jsonResponse.setItems(Collections.emptyList());
+          // 아이템 리스트 추출
+          List<PoliceApiFoundItem> itemList = new ArrayList<>();
+          JsonNode itemsNode = respNode.path("body").path("items").path("item");
+          if (itemsNode.isArray()) {
+            for (JsonNode itemNode : itemsNode) {
+              try {
+                itemList.add(objectMapper.treeToValue(itemNode, PoliceApiFoundItem.class));
+              } catch (JsonProcessingException ex) {
+                logger.error("JSON 아이템 변환 오류: {}", ex.getMessage(), ex);
+              }
+            }
+          } else if (itemsNode.isObject()) {
+            try {
+              itemList.add(objectMapper.treeToValue(itemsNode, PoliceApiFoundItem.class));
+            } catch (JsonProcessingException ex) {
+              logger.error("JSON 아이템 변환 오류: {}", ex.getMessage(), ex);
+            }
+          }
+          jsonResponse.setItems(itemList);
           return jsonResponse;
         } catch (Exception e) {
           logger.error("JSON 파싱 오류(습득물): {}. Response JSON:\n{}", e.getMessage(), xmlBody, e);

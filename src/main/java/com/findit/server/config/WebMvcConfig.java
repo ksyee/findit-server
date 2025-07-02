@@ -6,8 +6,8 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Spring MVC uad6cuc131 ud074ub798uc2a4
- * uc778ud130uc149ud130 ubc0f uae30ud0c0 MVC uad00ub828 uc124uc815 uad6cuc131
+ * Spring MVC 구성 클래스
+ * 인터셉터 및 기타 MVC 관련 설정 구성
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
@@ -15,22 +15,22 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private final RequestCounterInterceptor requestCounterInterceptor;
 
     /**
-     * uc0dduc131uc790
+     * 생성자
      * 
-     * @param requestCounterInterceptor API uc694uccad uce74uc6b4ud130 uc778ud130uc149ud130
+     * @param requestCounterInterceptor API 요청 카운터 인터셉터
      */
     public WebMvcConfig(RequestCounterInterceptor requestCounterInterceptor) {
         this.requestCounterInterceptor = requestCounterInterceptor;
     }
 
     /**
-     * uc778ud130uc149ud130 ub4f1ub85d
+     * 인터셉터 등록
      * 
-     * @param registry uc778ud130uc149ud130 ub808uc9c0uc2a4ud2b8ub9ac
+     * @param registry 인터셉터 레지스트리
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(requestCounterInterceptor)
-                .addPathPatterns("/api/**"); // API uacbdub85cuc5d0ub9cc uc801uc6a9
+                .addPathPatterns("/api/**"); // API 경로에만 적용
     }
 }

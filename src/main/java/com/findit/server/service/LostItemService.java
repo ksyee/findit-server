@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,14 +25,14 @@ public class LostItemService {
     
     @Transactional(readOnly = true)
     public List<LostItemDto> getAllLostItems() {
-        return lostItemRepository.findAll().stream()
+        return lostItemRepository.findAll(Sort.by(Sort.Direction.DESC, "atcId")).stream()
                 .map(LostItemDto::fromEntity)
                 .collect(Collectors.toList());
     }
     
     @Transactional(readOnly = true)
     public Page<LostItemDto> getAllLostItems(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "atcId"));
         return lostItemRepository.findAll(pageable)
                 .map(LostItemDto::fromEntity);
     }

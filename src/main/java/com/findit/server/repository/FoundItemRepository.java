@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface FoundItemRepository extends JpaRepository<FoundItem, String> {
+public interface FoundItemRepository extends JpaRepository<FoundItem, String>, FoundItemRepositoryCustom {
     
     List<FoundItem> findByPrdtClNm(String prdtClNm);
     

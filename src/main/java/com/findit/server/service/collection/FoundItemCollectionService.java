@@ -13,12 +13,14 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.ArrayList;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,6 +32,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public class FoundItemCollectionService {
   
   private static final Logger logger = LoggerFactory.getLogger(FoundItemCollectionService.class);
+  
+  // 한 번 실행 시 최대 10페이지(페이지당 100건)만 저장
+  private static final int MAX_PAGES = 10;
   
   private final PoliceApiClient apiClient;
   private final FoundItemRepository repository;
@@ -71,20 +76,22 @@ public class FoundItemCollectionService {
   /**
    * 경찰청 API에서 새로운 습득물 데이터를 가져와 저장
    *
-   * @return 저장된 습득물 수
+   * @return 저장된 습득물 목록
    */
   @Transactional
   @Timed(value = "found_items.collection", description = "Time taken to collect found items")
-  public int fetchAndSaveNewItems() {
+  public List<FoundItem> fetchAndSaveNewItems() {
     logger.info("Fetching new found items from Police API");
     
     return fetchTimer.record(() -> {
       int totalSaved = 0;
+      List<FoundItem> savedItems = new ArrayList<>();
       
       try {
         // 날짜 범위 설정
         String endYmdStr = LocalDate.now().minusDays(1).format(DateTimeFormatter.BASIC_ISO_DATE);
         String startYmdStr = LocalDate.now().minusDays(7).format(DateTimeFormatter.BASIC_ISO_DATE);
+        
         // API 호출 및 응답 처리
         PoliceApiFoundItemResponse response = apiClient.fetchFoundItems(1, 100, startYmdStr,
           endYmdStr);
@@ -94,14 +101,19 @@ public class FoundItemCollectionService {
         } catch (JsonProcessingException e) {
           logger.error("습득물 DTO JSON 변환 오류: {}", e.getMessage(), e);
         }
+        
         List<PoliceApiFoundItem> foundItems = response.getItems();
         logger.info("[습득물] API에서 받은 총 데이터 수: {}건", foundItems.size());
+        
         if (!foundItems.isEmpty()) {
           foundItemsFetchedCounter.increment(foundItems.size());
           List<FoundItem> mappedItems = mapper.mapList(foundItems);
-          int savedCount = processAndSaveItems(mappedItems);
-          foundItemsSavedCounter.increment(savedCount);
-          totalSaved += savedCount;
+          savedItems = saveItems(mappedItems);
+          totalSaved = savedItems.size();
+          foundItemsSavedCounter.increment(totalSaved);
+          
+          logger.info("[습득물] 신규 수집 저장 완료: {}건", totalSaved);
+          return savedItems;
         } else {
           logger.warn("[습득물] API에서 빈 목록을 반환했습니다.");
         }
@@ -110,7 +122,7 @@ public class FoundItemCollectionService {
       } catch (Exception e) {
         logger.error("Error fetching or saving found items: {}", e.getMessage(), e);
       }
-      return totalSaved;
+      return savedItems;
     });
   }
   
@@ -118,10 +130,10 @@ public class FoundItemCollectionService {
    * 습득물 데이터를 처리하고 저장
    *
    * @param items 처리할 습득물 목록
-   * @return 저장된 습득물 수
+   * @return 저장된 습득물 목록
    */
-  private int processAndSaveItems(List<FoundItem> items) {
-    int saved = 0;
+  private List<FoundItem> saveItems(List<FoundItem> items) {
+    List<FoundItem> savedItems = new ArrayList<>();
     
     for (FoundItem item : items) {
       if (!validator.isValidFoundItem(item)) {
@@ -131,27 +143,26 @@ public class FoundItemCollectionService {
       
       // 중복 검사
       if (!repository.existsByAtcId(item.getAtcId())) {
-        repository.save(item);
-        saved++;
+        FoundItem savedItem = repository.save(item);
+        savedItems.add(savedItem);
       }
     }
     
-    return saved;
+    return savedItems;
   }
   
   /**
    * (스케줄러용) 중복 발견 전까지 습득물 데이터를 저장
    *
-   * @return 저장된 건수
+   * @return 저장된 습득물 목록
    */
-  public int collectAndSaveUniqueItems() {
-    logger.info("[습득물] 중복 발견 전까지 저장 시작");
-    int totalSaved = 0;
+  public List<FoundItem> collectAndSaveUniqueItems() {
+    List<FoundItem> savedItems = new ArrayList<>();
     LocalDate now = LocalDate.now();
     String endYmd = now.format(DateTimeFormatter.BASIC_ISO_DATE);
     String startYmd = now.minusDays(7).format(DateTimeFormatter.BASIC_ISO_DATE);
     int page = 1;
-    while (true) {
+    while (page <= MAX_PAGES) {
       PoliceApiFoundItemResponse response = apiClient.fetchFoundItems(page, 100, startYmd, endYmd);
       try {
         String json = objectMapper.writeValueAsString(response);
@@ -164,26 +175,22 @@ public class FoundItemCollectionService {
       if (foundItems.isEmpty()) {
         break;
       }
+      
       List<FoundItem> mappedItems = mapper.mapList(foundItems);
-      int savedThisPage = 0;
-      for (FoundItem item : mappedItems) {
-        if (!validator.isValidFoundItem(item)) {
-          logger.warn("Skipping invalid item: {}", item);
-          continue;
-        }
-        if (repository.existsByAtcId(item.getAtcId())) {
-          continue;
-        }
-        repository.save(item);
-        totalSaved++;
-        savedThisPage++;
-      }
-      if (savedThisPage == 0) {
+      List<FoundItem> validItems = mappedItems.stream()
+        .filter(validator::isValidFoundItem)
+        .toList();
+      repository.upsertBatch(validItems);
+      savedItems.addAll(validItems);
+      // 중복 등으로 저장 건수가 0이거나 최대 페이지를 모두 조회했으면 종료
+      if (validItems.isEmpty()) {
         break;
       }
       page++;
     }
-    logger.info("[습득물] 저장 완료: {}건", totalSaved);
-    return totalSaved;
+    
+    logger.info("[습득물] 전체 배치 저장 완료: {}건", savedItems.size());
+    
+    return savedItems;
   }
 }
