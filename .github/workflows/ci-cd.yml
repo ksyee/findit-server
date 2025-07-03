@@ -42,6 +42,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Download jar artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-jar
+          path: build/libs
+
       - uses: docker/setup-qemu-action@v3  # M1/ARM 지원(선택)
       - uses: docker/setup-buildx-action@v3
 
