@@ -28,10 +28,10 @@ public interface FoundItemRepository extends JpaRepository<FoundItem, String>, F
     
     void deleteByAtcId(String atcId); // Added method for deleting by atcId
     
-    @Query("SELECT f FROM FoundItem f WHERE f.fdSbjt LIKE %:keyword% OR f.depPlace LIKE %:keyword%") 
+    @Query("SELECT f FROM FoundItem f WHERE f.fdSbjt LIKE %:keyword% OR f.depPlace LIKE %:keyword% OR f.fdPrdtNm LIKE %:keyword% OR f.prdtClNm LIKE %:keyword%")
     List<FoundItem> searchByKeyword(@Param("keyword") String keyword);
     
-    @Query("SELECT f FROM FoundItem f WHERE f.fdSbjt LIKE %:keyword% OR f.depPlace LIKE %:keyword%")
+    @Query("SELECT f FROM FoundItem f WHERE f.fdSbjt LIKE %:keyword% OR f.depPlace LIKE %:keyword% OR f.fdPrdtNm LIKE %:keyword% OR f.prdtClNm LIKE %:keyword%")
     Page<FoundItem> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
     
     @Query("SELECT f FROM FoundItem f WHERE f.prdtClNm = :prdtClNm AND f.fdYmd >= :startDate")

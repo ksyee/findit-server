@@ -32,10 +32,10 @@ public interface LostItemRepository extends JpaRepository<LostItem, String>, Los
     
     void deleteByAtcId(String atcId);
     
-    @Query("SELECT l FROM LostItem l WHERE l.lstPlace LIKE %:keyword%")
+    @Query("SELECT l FROM LostItem l WHERE l.lstPlace LIKE %:keyword% OR l.lstPrdtNm LIKE %:keyword% OR l.lstSbjt LIKE %:keyword% OR l.prdtClNm LIKE %:keyword%")
     List<LostItem> searchByKeyword(@Param("keyword") String keyword);
     
-    @Query("SELECT l FROM LostItem l WHERE l.lstPlace LIKE %:keyword%")
+    @Query("SELECT l FROM LostItem l WHERE l.lstPlace LIKE %:keyword% OR l.lstPrdtNm LIKE %:keyword% OR l.lstSbjt LIKE %:keyword% OR l.prdtClNm LIKE %:keyword%")
     Page<LostItem> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
     
     @Query("SELECT l FROM LostItem l WHERE l.prdtClNm = :itemType AND l.lstYmd >= :startYmd")
