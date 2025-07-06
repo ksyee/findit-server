@@ -42,6 +42,10 @@ public class FoundItemDto {
     @Schema(description = "습득순번 (경찰청 API)", example = "1")
     private String fdSn;
 
+    @Schema(description = "이미지 경로", example = "https://example.com/image.jpg")
+    @Size(max = 500, message = "이미지 경로는 500자를 초과할 수 없습니다")
+    private String fdFilePathImg;
+
     public FoundItemDto() {
     }
 
@@ -56,6 +60,18 @@ public class FoundItemDto {
         this.fdSn = fdSn;
     }
 
+    public FoundItemDto(String atcId, String fdPrdtNm, String prdtClNm, String depPlace, String fdYmd, String fdSbjt, String clrNm, String fdSn, String fdFilePathImg) {
+        this.atcId = atcId;
+        this.fdPrdtNm = fdPrdtNm;
+        this.prdtClNm = prdtClNm;
+        this.depPlace = depPlace;
+        this.fdYmd = fdYmd;
+        this.fdSbjt = fdSbjt;
+        this.clrNm = clrNm;
+        this.fdSn = fdSn;
+        this.fdFilePathImg = fdFilePathImg;
+    }
+
     public static FoundItemDto fromEntity(FoundItem foundItem) {
         if (foundItem == null) {
             return null;
@@ -67,6 +83,7 @@ public class FoundItemDto {
                 .depPlace(foundItem.getDepPlace())
                 .fdYmd(foundItem.getFdYmd())
                 .fdSbjt(foundItem.getFdSbjt())
+                .fdFilePathImg(foundItem.getFdFilePathImg())
                 .clrNm(foundItem.getClrNm())
                 .fdSn(foundItem.getFdSn())
                 .build();
@@ -104,6 +121,10 @@ public class FoundItemDto {
         return fdSn;
     }
 
+    public String getFdFilePathImg() {
+        return fdFilePathImg;
+    }
+
     public void setAtcId(String atcId) {
         this.atcId = atcId;
     }
@@ -136,6 +157,10 @@ public class FoundItemDto {
         this.fdSn = fdSn;
     }
 
+    public void setFdFilePathImg(String fdFilePathImg) {
+        this.fdFilePathImg = fdFilePathImg;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -149,6 +174,7 @@ public class FoundItemDto {
         private String fdSbjt;
         private String clrNm;
         private String fdSn;
+        private String fdFilePathImg;
 
         public Builder atcId(String atcId) {
             this.atcId = atcId;
@@ -190,6 +216,11 @@ public class FoundItemDto {
             return this;
         }
 
+        public Builder fdFilePathImg(String fdFilePathImg) {
+            this.fdFilePathImg = fdFilePathImg;
+            return this;
+        }
+
         public FoundItemDto build() {
             FoundItemDto dto = new FoundItemDto();
             dto.setAtcId(this.atcId);
@@ -200,6 +231,7 @@ public class FoundItemDto {
             dto.setFdSbjt(this.fdSbjt);
             dto.setClrNm(this.clrNm);
             dto.setFdSn(this.fdSn);
+            dto.setFdFilePathImg(this.fdFilePathImg);
             return dto;
         }
     }
