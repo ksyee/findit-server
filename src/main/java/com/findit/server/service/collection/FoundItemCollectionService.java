@@ -81,6 +81,10 @@ public class FoundItemCollectionService {
   @Transactional
   @Timed(value = "found_items.collection", description = "Time taken to collect found items")
   public List<FoundItem> fetchAndSaveNewItems() {
+    if (!apiClient.isEnabled()) {
+      logger.info("Police API 비활성화 상태로 습득물 신규 수집을 건너뜁니다.");
+      return new ArrayList<>();
+    }
     logger.info("Fetching new found items from Police API");
     
     return fetchTimer.record(() -> {
@@ -157,6 +161,10 @@ public class FoundItemCollectionService {
    * @return 저장된 습득물 목록
    */
   public List<FoundItem> collectAndSaveUniqueItems() {
+    if (!apiClient.isEnabled()) {
+      logger.info("Police API 비활성화 상태로 습득물 배치 수집을 건너뜁니다.");
+      return new ArrayList<>();
+    }
     List<FoundItem> savedItems = new ArrayList<>();
     LocalDate now = LocalDate.now();
     String endYmd = now.format(DateTimeFormatter.BASIC_ISO_DATE);
@@ -192,5 +200,9 @@ public class FoundItemCollectionService {
     logger.info("[습득물] 전체 배치 저장 완료: {}건", savedItems.size());
     
     return savedItems;
+  }
+
+  public boolean isCollectionEnabled() {
+    return apiClient.isEnabled();
   }
 }

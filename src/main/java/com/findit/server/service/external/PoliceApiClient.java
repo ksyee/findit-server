@@ -39,6 +39,7 @@ public class PoliceApiClient {
   private final RestTemplate restTemplate;
   private final String policeApiBaseUrl;
   private final String serviceKey;
+  private final boolean enabled;
   
   /**
    * 생성자
@@ -51,16 +52,29 @@ public class PoliceApiClient {
    */
   public PoliceApiClient(RestTemplate restTemplate,
     @Value("${police.api.base-url}") String policeApiBaseUrl,
-    @Value("${police.api.service-key}") String serviceKey,
+    @Value("${police.api.service-key:}") String serviceKey,
     @Value("${police.api.lost-items-url}") String lostItemListPath,
-    @Value("${police.api.found-items-url}") String foundItemListPath) {
+    @Value("${police.api.found-items-url}") String foundItemListPath,
+    @Value("${police.api.enabled:false}") boolean apiEnabled) {
     this.restTemplate = restTemplate;
     this.policeApiBaseUrl = policeApiBaseUrl;
     this.serviceKey = serviceKey;
     this.lostItemListPath = lostItemListPath;
     this.foundItemListPath = foundItemListPath;
+    this.enabled = apiEnabled && serviceKey != null && !serviceKey.isBlank();
+
+    if (!this.enabled) {
+      logger.warn("Police API 호출이 비활성화되었습니다. 저장된 데이터만 사용합니다.");
+    }
   }
-  
+
+  /**
+   * 외부 경찰청 API 호출 가능 여부 반환
+   */
+  public boolean isEnabled() {
+    return enabled;
+  }
+
   /**
    * 경찰청 API에서 분실물 데이터 목록을 가져옴 오류 발생 시 재시도 로직 포함
    *
@@ -73,6 +87,10 @@ public class PoliceApiClient {
   @Retryable(value = {RestClientException.class}, maxAttempts = 3, backoff = @Backoff(delay = 1000))
   public PoliceApiLostItemResponse fetchLostItems(int pageNo, int numOfRows, String startYmd,
     String endYmd) {
+    if (!enabled) {
+      logger.debug("Police API 비활성화 상태로 분실물 데이터를 호출하지 않습니다.");
+      return buildDisabledLostResponse();
+    }
     logger.info("Fetching lost items from Police API with URL: {}",
       policeApiBaseUrl + lostItemListPath);
     
@@ -187,6 +205,10 @@ public class PoliceApiClient {
   @Retryable(value = {RestClientException.class}, maxAttempts = 3, backoff = @Backoff(delay = 1000))
   public PoliceApiFoundItemResponse fetchFoundItems(int pageNo, int numOfRows, String startYmd,
     String endYmd) {
+    if (!enabled) {
+      logger.debug("Police API 비활성화 상태로 습득물 데이터를 호출하지 않습니다.");
+      return buildDisabledFoundResponse();
+    }
     logger.info("Fetching found items from Police API with URL: {}", policeApiBaseUrl + foundItemListPath);
     
     // serviceKey는 인코딩하지 않고, properties에 저장된 값을 그대로 사용
@@ -286,5 +308,25 @@ public class PoliceApiClient {
       errorResponse.setItems(Collections.emptyList());
       return errorResponse;
     }
+  }
+
+  private PoliceApiLostItemResponse buildDisabledLostResponse() {
+    PoliceApiLostItemResponse response = new PoliceApiLostItemResponse();
+    PoliceApiLostItemResponse.Header header = new PoliceApiLostItemResponse.Header();
+    header.setResultCode("API_DISABLED");
+    header.setResultMsg("Police API disabled");
+    response.setHeader(header);
+    response.setItems(Collections.emptyList());
+    return response;
+  }
+
+  private PoliceApiFoundItemResponse buildDisabledFoundResponse() {
+    PoliceApiFoundItemResponse response = new PoliceApiFoundItemResponse();
+    PoliceApiFoundItemResponse.Header header = new PoliceApiFoundItemResponse.Header();
+    header.setResultCode("API_DISABLED");
+    header.setResultMsg("Police API disabled");
+    response.setHeader(header);
+    response.setItems(Collections.emptyList());
+    return response;
   }
 }

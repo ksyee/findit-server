@@ -42,6 +42,10 @@ public class SchedulingConfig {
   @EventListener(ApplicationReadyEvent.class)
   @Scheduled(cron = "0 0 0,12 * * *")
   public void collectLostAndFoundItems() {
+    if (!lostItemService.isCollectionEnabled() || !foundItemService.isCollectionEnabled()) {
+      logger.info("Police API 비활성화 상태로 스케줄 데이터 수집을 건너뜁니다.");
+      return;
+    }
     logger.info("[스케줄] 분실물/습득물 데이터 수집 시작");
     try {
       List<LostItem> lostSaved = lostItemService.collectAndSaveUniqueItems();

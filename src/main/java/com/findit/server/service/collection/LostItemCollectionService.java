@@ -80,6 +80,10 @@ public class LostItemCollectionService {
    */
   @Timed(value = "lost_items.collection", description = "Time taken to collect lost items")
   public List<LostItem> fetchAndSaveNewItems() {
+    if (!apiClient.isEnabled()) {
+      logger.info("Police API 비활성화 상태로 분실물 신규 수집을 건너뜁니다.");
+      return new ArrayList<>();
+    }
     logger.info("Fetching new lost items from Police API");
     
     return fetchTimer.record(() -> {
@@ -153,6 +157,10 @@ public class LostItemCollectionService {
    * @return 저장된 분실물 목록
    */
   public List<LostItem> collectAndSaveUniqueItems() {
+    if (!apiClient.isEnabled()) {
+      logger.info("Police API 비활성화 상태로 분실물 배치 수집을 건너뜁니다.");
+      return new ArrayList<>();
+    }
     List<LostItem> savedItems = new ArrayList<>();
     LocalDate now = LocalDate.now();
     String endYmd = now.format(DateTimeFormatter.BASIC_ISO_DATE);
@@ -184,5 +192,9 @@ public class LostItemCollectionService {
     
     logger.info("[분실물] 전체 배치 저장 완료: {}건", savedItems.size());
     return savedItems;
+  }
+
+  public boolean isCollectionEnabled() {
+    return apiClient.isEnabled();
   }
 }

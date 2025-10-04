@@ -30,6 +30,13 @@ public class PoliceApiHealthIndicator implements HealthIndicator {
      */
     @Override
     public Health health() {
+        if (!apiClient.isEnabled()) {
+            return Health.unknown()
+                    .withDetail("service", "Police API")
+                    .withDetail("status", "Disabled")
+                    .withDetail("message", "Police API calls are turned off")
+                    .build();
+        }
         try {
             // 간단한 API 호출로 서비스 상태 확인 (첫 페이지, 1개 항목, 날짜/카테고리 필터 없음)
             PoliceApiLostItemResponse response = apiClient.fetchLostItems(1, 1, null, null);

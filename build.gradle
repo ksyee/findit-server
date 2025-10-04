@@ -45,7 +45,7 @@ dependencies {
 	implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.5' // Jakarta EE 9+ compatible
 	
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.mysql:mysql-connector-j'
+	runtimeOnly 'org.postgresql:postgresql'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'com.h2database:h2:2.2.224'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
