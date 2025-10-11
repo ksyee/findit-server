@@ -1,0 +1,2 @@
+org.springframework.boot.env.EnvironmentPostProcessor=\
+com.findit.server.infrastructure.aws.AwsParameterStoreEnvironmentPostProcessor

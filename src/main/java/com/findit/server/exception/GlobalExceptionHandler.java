@@ -1,6 +1,6 @@
 package com.findit.server.exception;
 
-import com.findit.server.dto.ApiResponse;
+import com.findit.server.application.common.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

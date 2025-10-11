@@ -1,9 +1,9 @@
 package com.findit.server.config;
 
-import com.findit.server.entity.FoundItem;
-import com.findit.server.entity.LostItem;
-import com.findit.server.service.collection.FoundItemCollectionService;
-import com.findit.server.service.collection.LostItemCollectionService;
+import com.findit.server.domain.founditem.FoundItem;
+import com.findit.server.domain.lostitem.LostItem;
+import com.findit.server.application.collection.founditem.FoundItemCollectionService;
+import com.findit.server.application.collection.lostitem.LostItemCollectionService;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

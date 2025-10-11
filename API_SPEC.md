@@ -2,6 +2,8 @@
 
 **Base URL:** `http://localhost:8080/api`
 
+**Authentication:** 모든 보호된 엔드포인트는 `X-API-KEY` 헤더에 서버에 설정된 API 키 값을 전달해야 합니다. `/api/health` 및 `/actuator/**`, `/swagger-ui/**`, `/v3/api-docs/**`는 공개되어 있습니다.
+
 ---
 
 ## 분실물 API (Lost Items)

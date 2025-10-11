@@ -1,10 +1,10 @@
 package com.findit.server.health;
 
-import com.findit.server.service.external.PoliceApiClient;
+import com.findit.server.infrastructure.police.client.PoliceApiClient;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
-import com.findit.server.dto.external.PoliceApiLostItemResponse;
+import com.findit.server.infrastructure.police.dto.PoliceApiLostItemResponse;
 
 /**
  * 경찰청 API 헬스 체크 인디케이터

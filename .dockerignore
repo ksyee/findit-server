@@ -1,0 +1,30 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+.vscode
+*.iml
+
+# Build
+build
+.gradle
+target
+
+# Local env
+.env
+.env.*
+
+# Dumps
+dumps
+
+# Docs
+docs
+README.md
+
+# Tests
+src/test
+
+# CI/CD
+.github

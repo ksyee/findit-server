@@ -1,8 +1,7 @@
 package com.findit.server.config;
 
-import com.findit.server.service.external.PoliceApiClient;
+import com.findit.server.infrastructure.police.client.PoliceApiClient;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -35,10 +34,6 @@ public class DatabaseConfigTest {
             return Mockito.mock(PoliceApiClient.class);
         }
 
-        @Bean
-        public MeterRegistry meterRegistry() {
-            return new SimpleMeterRegistry(); 
-        }
     }
 
     @Autowired
