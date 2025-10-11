@@ -61,6 +61,10 @@ public class AwsParameterStoreEnvironmentPostProcessor implements EnvironmentPos
                         ? name.substring(parameterPath.length())
                         : name;
                     key = key.replaceFirst("^/", "").replace('/', '.');
+
+                    // Map SSM parameter names to Spring Boot property names
+                    key = mapParameterName(key);
+
                     if (StringUtils.hasText(key)) {
                         properties.put(key, parameter.value());
                     }
@@ -85,5 +89,21 @@ public class AwsParameterStoreEnvironmentPostProcessor implements EnvironmentPos
     public int getOrder() {
         // Ensure values are available before most other property sources.
         return Ordered.HIGHEST_PRECEDENCE + 10;
+    }
+
+    /**
+     * Maps SSM parameter names to Spring Boot property names.
+     * Example: datasource-url -> spring.datasource.url
+     */
+    private String mapParameterName(String key) {
+        Map<String, String> mappings = Map.of(
+            "datasource-url", "spring.datasource.url",
+            "datasource-username", "spring.datasource.username",
+            "datasource-password", "spring.datasource.password",
+            "api-security-enabled", "security.api.enabled",
+            "api-security-key", "security.api.key",
+            "police-api-enabled", "police.api.enabled"
+        );
+        return mappings.getOrDefault(key, key);
     }
 }

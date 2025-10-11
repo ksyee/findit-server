@@ -87,7 +87,7 @@
                 --name findit \
                 --restart unless-stopped \
                 -p 8080:8080 \
-                --env-file /opt/findit/.env \
+                -e SPRING_PROFILES_ACTIVE=prod \
                 ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
               # 헬스체크 (최대 60초 대기)
