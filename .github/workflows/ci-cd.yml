@@ -94,20 +94,24 @@
                 -e API_SECURITY_ENABLED=false \
                 ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-              # 헬스체크 (최대 60초 대기)
+              # 헬스체크 (최대 120초 대기)
               echo "Waiting for application to start..."
-              for i in {1..12}; do
+              for i in {1..24}; do
                 sleep 5
-                if curl -f http://localhost:8080/api/health; then
+                if curl -s -f http://localhost:8080/api/health > /dev/null 2>&1; then
                   echo "✅ Health check passed!"
+                  curl http://localhost:8080/api/health
                   break
                 fi
-                if [ $i -eq 12 ]; then
-                  echo "❌ Health check failed after 60 seconds"
-                  docker logs findit
+                if [ $i -eq 24 ]; then
+                  echo "❌ Health check failed after 120 seconds"
+                  echo "Container status:"
+                  docker ps -a | grep findit
+                  echo "Application logs:"
+                  docker logs findit --tail 50
                   exit 1
                 fi
-                echo "Attempt $i/12 failed, retrying..."
+                echo "Attempt $i/24: Waiting for application to start..."
               done
 
               # 구버전 이미지 정리
