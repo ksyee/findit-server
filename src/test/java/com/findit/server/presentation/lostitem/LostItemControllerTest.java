@@ -87,19 +87,21 @@ public class LostItemControllerTest {
     fixedDateTimeString = fixedDateTime.format(formatter);
     fixedDateYmd = fixedDateTime.toLocalDate().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-    lostItemDto = LostItemDto.builder()
-      .atcId("L_TEST_ATC_ID_1")
-      .prdtClNm("전자기기")
-      .lstPlace("서울시 강남구 역삼동")
-      .lstYmd(fixedDateYmd)
-      .build();
+    lostItemDto = new LostItemDto(
+      "L_TEST_ATC_ID_1",
+      "전자기기",
+      "서울시 강남구 역삼동",
+      fixedDateYmd,
+      null
+    );
 
-    LostItemDto lostItemDto2 = LostItemDto.builder()
-      .atcId("L_TEST_ATC_ID_2")
-      .prdtClNm("지갑")
-      .lstPlace("서울시 송파구 송파동")
-      .lstYmd(fixedDateYmd)
-      .build();
+    LostItemDto lostItemDto2 = new LostItemDto(
+      "L_TEST_ATC_ID_2",
+      "지갑",
+      "서울시 송파구 송파동",
+      fixedDateYmd,
+      null
+    );
 
     lostItemDtoList = Arrays.asList(lostItemDto, lostItemDto2);
   }
@@ -119,10 +121,10 @@ public class LostItemControllerTest {
       .andExpect(jsonPath("$.success").value(true))
       .andExpect(jsonPath("$.data", hasSize(2)))
       .andExpect(jsonPath("$.data[0].atcId").value("L_TEST_ATC_ID_1"))
-      .andExpect(jsonPath("$.data[0].prdtClNm").value(lostItemDto.getPrdtClNm()))
+      .andExpect(jsonPath("$.data[0].prdtClNm").value(lostItemDto.prdtClNm()))
       .andExpect(jsonPath("$.data[0].lstYmd").value(fixedDateYmd))
       .andExpect(jsonPath("$.data[1].atcId").value("L_TEST_ATC_ID_2"))
-      .andExpect(jsonPath("$.data[1].prdtClNm").value(lostItemDtoList.get(1).getPrdtClNm()))
+      .andExpect(jsonPath("$.data[1].prdtClNm").value(lostItemDtoList.get(1).prdtClNm()))
       .andExpect(jsonPath("$.data[1].lstYmd").value(fixedDateYmd))
       .andExpect(jsonPath("$.page").value(0))
       .andExpect(jsonPath("$.size").value(20))
@@ -138,10 +140,11 @@ public class LostItemControllerTest {
         .accept(MediaType.APPLICATION_JSON))
       .andDo(print())
       .andExpect(status().isOk())
-      .andExpect(jsonPath("$.atcId").value(lostItemDto.getAtcId()))
-      .andExpect(jsonPath("$.prdtClNm").value(lostItemDto.getPrdtClNm()))
-      .andExpect(jsonPath("$.lstYmd").value(fixedDateYmd))
-      .andExpect(jsonPath("$.lstPlace").value(lostItemDto.getLstPlace()));
+      .andExpect(jsonPath("$.success").value(true))
+      .andExpect(jsonPath("$.data.atcId").value(lostItemDto.atcId()))
+      .andExpect(jsonPath("$.data.prdtClNm").value(lostItemDto.prdtClNm()))
+      .andExpect(jsonPath("$.data.lstYmd").value(fixedDateYmd))
+      .andExpect(jsonPath("$.data.lstPlace").value(lostItemDto.lstPlace()));
   }
 
   @Test
@@ -155,10 +158,10 @@ public class LostItemControllerTest {
       .andExpect(status().isCreated())
       .andExpect(jsonPath("$.success").value(true))
       .andExpect(jsonPath("$.message").value("Lost item created successfully"))
-      .andExpect(jsonPath("$.data.atcId").value(lostItemDto.getAtcId()))
-      .andExpect(jsonPath("$.data.prdtClNm").value(lostItemDto.getPrdtClNm()))
+      .andExpect(jsonPath("$.data.atcId").value(lostItemDto.atcId()))
+      .andExpect(jsonPath("$.data.prdtClNm").value(lostItemDto.prdtClNm()))
       .andExpect(jsonPath("$.data.lstYmd").value(fixedDateYmd))
-      .andExpect(jsonPath("$.data.lstPlace").value(lostItemDto.getLstPlace()));
+      .andExpect(jsonPath("$.data.lstPlace").value(lostItemDto.lstPlace()));
   }
 
   @Test
@@ -172,10 +175,10 @@ public class LostItemControllerTest {
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.success").value(true))
       .andExpect(jsonPath("$.message").value("Lost item updated successfully"))
-      .andExpect(jsonPath("$.data.atcId").value(lostItemDto.getAtcId()))
-      .andExpect(jsonPath("$.data.prdtClNm").value(lostItemDto.getPrdtClNm()))
+      .andExpect(jsonPath("$.data.atcId").value(lostItemDto.atcId()))
+      .andExpect(jsonPath("$.data.prdtClNm").value(lostItemDto.prdtClNm()))
       .andExpect(jsonPath("$.data.lstYmd").value(fixedDateYmd))
-      .andExpect(jsonPath("$.data.lstPlace").value(lostItemDto.getLstPlace()));
+      .andExpect(jsonPath("$.data.lstPlace").value(lostItemDto.lstPlace()));
   }
 
   @Test

@@ -37,7 +37,7 @@ public class LostItemApplicationService {
 
     @Transactional(readOnly = true)
     public Page<LostItemDto> getAllLostItems(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "atcId"));
+        Pageable pageable = pageOf(page, size, Sort.by(Sort.Direction.DESC, "atcId"));
         return lostItemRepository.findAll(pageable)
             .map(LostItemDto::fromEntity);
     }
@@ -53,13 +53,13 @@ public class LostItemApplicationService {
     public LostItemDto createLostItem(LostItemDto lostItemDto) {
         try {
             LostItem lostItem = LostItem.create(
-                LostItemId.of(lostItemDto.getAtcId()),
-                ItemCategory.of(lostItemDto.getPrdtClNm()),
-                LocationName.of(lostItemDto.getLstPlace()),
-                LostDate.of(lostItemDto.getLstYmd()),
+                LostItemId.of(lostItemDto.atcId()),
+                ItemCategory.of(lostItemDto.prdtClNm()),
+                LocationName.of(lostItemDto.lstPlace()),
+                LostDate.of(lostItemDto.lstYmd()),
                 null,
                 null,
-                lostItemDto.getRnum()
+                lostItemDto.rnum()
             );
 
             LostItem savedLostItem = lostItemRepository.save(lostItem);
@@ -75,10 +75,10 @@ public class LostItemApplicationService {
             .orElseThrow(() -> new ResourceNotFoundException("LostItem", "atcId", atcId));
         try {
             existingLostItem.updateCoreDetails(
-                ItemCategory.of(lostItemDto.getPrdtClNm()),
-                LocationName.of(lostItemDto.getLstPlace()),
-                LostDate.of(lostItemDto.getLstYmd()),
-                lostItemDto.getRnum()
+                ItemCategory.of(lostItemDto.prdtClNm()),
+                LocationName.of(lostItemDto.lstPlace()),
+                LostDate.of(lostItemDto.lstYmd()),
+                lostItemDto.rnum()
             );
         } catch (IllegalArgumentException e) {
             throw new InvalidRequestException(e.getMessage());
@@ -105,21 +105,21 @@ public class LostItemApplicationService {
 
     @Transactional(readOnly = true)
     public Page<LostItemDto> findByPrdtClNm(String prdtClNm, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = pageOf(page, size);
         return lostItemRepository.findByPrdtClNm(prdtClNm, pageable)
             .map(LostItemDto::fromEntity);
     }
 
     @Transactional(readOnly = true)
     public Page<LostItemDto> findByLstPlaceContaining(String lstPlace, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = pageOf(page, size);
         return lostItemRepository.findByLstPlaceContaining(lstPlace, pageable)
             .map(LostItemDto::fromEntity);
     }
 
     @Transactional(readOnly = true)
     public Page<LostItemDto> findByLstYmdBetween(LocalDateTime start, LocalDateTime end, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = pageOf(page, size);
         String startYmd = start.format(DateTimeFormatter.BASIC_ISO_DATE);
         String endYmd = end.format(DateTimeFormatter.BASIC_ISO_DATE);
         return lostItemRepository.findByLstYmdBetween(startYmd, endYmd, pageable)
@@ -135,7 +135,7 @@ public class LostItemApplicationService {
 
     @Transactional(readOnly = true)
     public Page<LostItemDto> searchByKeyword(String keyword, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = pageOf(page, size);
         return lostItemRepository.searchByKeyword(keyword, pageable)
             .map(LostItemDto::fromEntity);
     }
@@ -153,8 +153,16 @@ public class LostItemApplicationService {
     public Page<LostItemDto> findRecentLostItems(String prdtClNm, int days, int page, int size) {
         LocalDateTime startDate = LocalDateTime.now().minusDays(days);
         String startYmd = startDate.format(DateTimeFormatter.BASIC_ISO_DATE);
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = pageOf(page, size);
         return lostItemRepository.findRecentLostItemsByType(prdtClNm, startYmd, pageable)
             .map(LostItemDto::fromEntity);
+    }
+
+    private Pageable pageOf(int page, int size) {
+        return PageRequest.of(page, size);
+    }
+
+    private Pageable pageOf(int page, int size, Sort sort) {
+        return PageRequest.of(page, size, sort);
     }
 }

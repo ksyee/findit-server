@@ -45,15 +45,7 @@ public class FoundItemController {
             @Parameter(description = "페이지 번호", required = false) @RequestParam(defaultValue = "0") @Min(0) int page,
             @Parameter(description = "페이지 크기", required = false) @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
         Page<FoundItemDto> foundItemsPage = foundItemService.getAllFoundItems(page, size);
-        List<FoundItemDto> foundItems = foundItemsPage.getContent();
-        
-        ApiResponse<List<FoundItemDto>> response = ApiResponse.success(foundItems);
-        response.setPage(page);
-        response.setSize(size);
-        response.setTotalElements(foundItemsPage.getTotalElements());
-        response.setTotalPages(foundItemsPage.getTotalPages());
-        
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.page(foundItemsPage));
     }
     
     @GetMapping("/{atcId}")
@@ -65,13 +57,8 @@ public class FoundItemController {
     })
     public ResponseEntity<ApiResponse<FoundItemDto>> getFoundItemByAtcId(
             @Parameter(description = "습득물 관리 ID (ATC_ID)", required = true) @PathVariable String atcId) {
-        try {
-            FoundItemDto foundItem = foundItemService.getFoundItemByAtcId(atcId);
-            return ResponseEntity.ok(ApiResponse.success(foundItem));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.error(e.getMessage()));
-        }
+        FoundItemDto foundItem = foundItemService.getFoundItemByAtcId(atcId);
+        return ResponseEntity.ok(ApiResponse.success(foundItem));
     }
     
     @PostMapping
@@ -99,13 +86,8 @@ public class FoundItemController {
     public ResponseEntity<ApiResponse<FoundItemDto>> updateFoundItem(
             @Parameter(description = "습득물 관리 ID (ATC_ID)", required = true) @PathVariable String atcId,
             @Parameter(description = "수정할 습득물 정보", required = true) @RequestBody @Valid FoundItemDto foundItemDto) {
-        try {
-            FoundItemDto updatedFoundItem = foundItemService.updateFoundItem(atcId, foundItemDto);
-            return ResponseEntity.ok(ApiResponse.success("수정 성공", updatedFoundItem));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.error(e.getMessage()));
-        }
+        FoundItemDto updatedFoundItem = foundItemService.updateFoundItem(atcId, foundItemDto);
+        return ResponseEntity.ok(ApiResponse.success("수정 성공", updatedFoundItem));
     }
     
     @DeleteMapping("/{atcId}")
@@ -117,13 +99,8 @@ public class FoundItemController {
     })
     public ResponseEntity<ApiResponse<Void>> deleteFoundItem(
             @Parameter(description = "습득물 관리 ID (ATC_ID)", required = true) @PathVariable String atcId) {
-        try {
-            foundItemService.deleteFoundItem(atcId);
-            return ResponseEntity.ok(ApiResponse.success("삭제 성공", null));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.error(e.getMessage()));
-        }
+        foundItemService.deleteFoundItem(atcId);
+        return ResponseEntity.ok(ApiResponse.success("삭제 성공", null));
     }
     
     @GetMapping("/type/{itemType}")
@@ -137,15 +114,7 @@ public class FoundItemController {
             @Parameter(description = "페이지 번호", required = false) @RequestParam(defaultValue = "0") @Min(0) int page,
             @Parameter(description = "페이지 크기", required = false) @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
         Page<FoundItemDto> foundItemsPage = foundItemService.findByItemType(itemType, page, size);
-        List<FoundItemDto> foundItems = foundItemsPage.getContent();
-        
-        ApiResponse<List<FoundItemDto>> response = ApiResponse.success(foundItems);
-        response.setPage(page);
-        response.setSize(size);
-        response.setTotalElements(foundItemsPage.getTotalElements());
-        response.setTotalPages(foundItemsPage.getTotalPages());
-        
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.page(foundItemsPage));
     }
     
     @GetMapping("/location")
@@ -160,15 +129,7 @@ public class FoundItemController {
             @Parameter(description = "페이지 크기", required = false) @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
         
         Page<FoundItemDto> foundItemsPage = foundItemService.findByLocation(location, page, size);
-        List<FoundItemDto> foundItems = foundItemsPage.getContent();
-        
-        ApiResponse<List<FoundItemDto>> response = ApiResponse.success(foundItems);
-        response.setPage(page);
-        response.setSize(size);
-        response.setTotalElements(foundItemsPage.getTotalElements());
-        response.setTotalPages(foundItemsPage.getTotalPages());
-        
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.page(foundItemsPage));
     }
     
     @GetMapping("/search")
@@ -183,15 +144,7 @@ public class FoundItemController {
             @Parameter(description = "페이지 크기", required = false) @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
         
         Page<FoundItemDto> foundItemsPage = foundItemService.searchByKeyword(keyword, page, size);
-        List<FoundItemDto> foundItems = foundItemsPage.getContent();
-        
-        ApiResponse<List<FoundItemDto>> response = ApiResponse.success(foundItems);
-        response.setPage(page);
-        response.setSize(size);
-        response.setTotalElements(foundItemsPage.getTotalElements());
-        response.setTotalPages(foundItemsPage.getTotalPages());
-        
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.page(foundItemsPage));
     }
     
     @GetMapping("/recent")
@@ -207,15 +160,7 @@ public class FoundItemController {
             @Parameter(description = "페이지 크기", required = false) @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
         
         Page<FoundItemDto> foundItemsPage = foundItemService.findRecentFoundItems(itemType, days, page, size);
-        List<FoundItemDto> foundItems = foundItemsPage.getContent();
-        
-        ApiResponse<List<FoundItemDto>> response = ApiResponse.success(foundItems);
-        response.setPage(page);
-        response.setSize(size);
-        response.setTotalElements(foundItemsPage.getTotalElements());
-        response.setTotalPages(foundItemsPage.getTotalPages());
-        
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.page(foundItemsPage));
     }
     
     @GetMapping("/date-range")
@@ -236,14 +181,6 @@ public class FoundItemController {
         }
         
         Page<FoundItemDto> foundItemsPage = foundItemService.findByDateRange(start, end, page, size);
-        List<FoundItemDto> foundItems = foundItemsPage.getContent();
-        
-        ApiResponse<List<FoundItemDto>> response = ApiResponse.success(foundItems);
-        response.setPage(page);
-        response.setSize(size);
-        response.setTotalElements(foundItemsPage.getTotalElements());
-        response.setTotalPages(foundItemsPage.getTotalPages());
-        
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.page(foundItemsPage));
     }
 }

@@ -74,27 +74,29 @@ public class FoundItemControllerTest {
     void setUp() {
         fixedDateTime = LocalDateTime.now().withNano(0);
 
-        foundItemDto = FoundItemDto.builder()
-                .atcId("F_TEST_ATC_ID_1")
-                .fdPrdtNm("아이폰 14 프로")
-                .prdtClNm("전자기기")
-                .depPlace("서울시 강남구 역삼동")
-                .fdYmd(fixedDateTime.toLocalDate().toString())
-                .fdSbjt("아이폰 14 프로 블랙 색상")
-                .clrNm("블랙")
-                .fdSn("1")
-                .build();
+        foundItemDto = new FoundItemDto(
+                "F_TEST_ATC_ID_1",
+                "아이폰 14 프로",
+                "전자기기",
+                "서울시 강남구 역삼동",
+                fixedDateTime.toLocalDate().toString(),
+                "아이폰 14 프로 블랙 색상",
+                "블랙",
+                "1",
+                null
+        );
 
-        FoundItemDto foundItemDto2 = FoundItemDto.builder()
-                .atcId("F_TEST_ATC_ID_2")
-                .fdPrdtNm("가죽지갑")
-                .prdtClNm("지갑")
-                .depPlace("서울시 송파구 송파동")
-                .fdYmd(fixedDateTime.toLocalDate().toString())
-                .fdSbjt("가죽지갑 검정색")
-                .clrNm("검정")
-                .fdSn("2")
-                .build();
+        FoundItemDto foundItemDto2 = new FoundItemDto(
+                "F_TEST_ATC_ID_2",
+                "가죽지갑",
+                "지갑",
+                "서울시 송파구 송파동",
+                fixedDateTime.toLocalDate().toString(),
+                "가죽지갑 검정색",
+                "검정",
+                "2",
+                null
+        );
 
         foundItemDtoList = Arrays.asList(foundItemDto, foundItemDto2);
     }
@@ -115,21 +117,21 @@ public class FoundItemControllerTest {
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data", hasSize(2)))
                 .andExpect(jsonPath("$.data[0].atcId").value("F_TEST_ATC_ID_1"))
-                .andExpect(jsonPath("$.data[0].fdPrdtNm").value(foundItemDto.getFdPrdtNm()))
-                .andExpect(jsonPath("$.data[0].prdtClNm").value(foundItemDto.getPrdtClNm()))
-                .andExpect(jsonPath("$.data[0].depPlace").value(foundItemDto.getDepPlace()))
+                .andExpect(jsonPath("$.data[0].fdPrdtNm").value(foundItemDto.fdPrdtNm()))
+                .andExpect(jsonPath("$.data[0].prdtClNm").value(foundItemDto.prdtClNm()))
+                .andExpect(jsonPath("$.data[0].depPlace").value(foundItemDto.depPlace()))
                 .andExpect(jsonPath("$.data[0].fdYmd").value(fixedDateTime.toLocalDate().toString()))
-                .andExpect(jsonPath("$.data[0].fdSbjt").value(foundItemDto.getFdSbjt()))
-                .andExpect(jsonPath("$.data[0].clrNm").value(foundItemDto.getClrNm()))
-                .andExpect(jsonPath("$.data[0].fdSn").value(foundItemDto.getFdSn()))
+                .andExpect(jsonPath("$.data[0].fdSbjt").value(foundItemDto.fdSbjt()))
+                .andExpect(jsonPath("$.data[0].clrNm").value(foundItemDto.clrNm()))
+                .andExpect(jsonPath("$.data[0].fdSn").value(foundItemDto.fdSn()))
                 .andExpect(jsonPath("$.data[1].atcId").value("F_TEST_ATC_ID_2"))
-                .andExpect(jsonPath("$.data[1].fdPrdtNm").value(foundItemDtoList.get(1).getFdPrdtNm()))
-                .andExpect(jsonPath("$.data[1].prdtClNm").value(foundItemDtoList.get(1).getPrdtClNm()))
-                .andExpect(jsonPath("$.data[1].depPlace").value(foundItemDtoList.get(1).getDepPlace()))
+                .andExpect(jsonPath("$.data[1].fdPrdtNm").value(foundItemDtoList.get(1).fdPrdtNm()))
+                .andExpect(jsonPath("$.data[1].prdtClNm").value(foundItemDtoList.get(1).prdtClNm()))
+                .andExpect(jsonPath("$.data[1].depPlace").value(foundItemDtoList.get(1).depPlace()))
                 .andExpect(jsonPath("$.data[1].fdYmd").value(fixedDateTime.toLocalDate().toString()))
-                .andExpect(jsonPath("$.data[1].fdSbjt").value(foundItemDtoList.get(1).getFdSbjt()))
-                .andExpect(jsonPath("$.data[1].clrNm").value(foundItemDtoList.get(1).getClrNm()))
-                .andExpect(jsonPath("$.data[1].fdSn").value(foundItemDtoList.get(1).getFdSn()))
+                .andExpect(jsonPath("$.data[1].fdSbjt").value(foundItemDtoList.get(1).fdSbjt()))
+                .andExpect(jsonPath("$.data[1].clrNm").value(foundItemDtoList.get(1).clrNm()))
+                .andExpect(jsonPath("$.data[1].fdSn").value(foundItemDtoList.get(1).fdSn()))
                 .andExpect(jsonPath("$.page").value(0))
                 .andExpect(jsonPath("$.size").value(20))
                 .andExpect(jsonPath("$.totalElements").value(foundItemDtoList.size()))
@@ -143,14 +145,14 @@ public class FoundItemControllerTest {
         mockMvc.perform(get("/api/found-items/F_TEST_ATC_ID_1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.atcId").value(foundItemDto.getAtcId()))
-                .andExpect(jsonPath("$.data.fdPrdtNm").value(foundItemDto.getFdPrdtNm()))
-                .andExpect(jsonPath("$.data.prdtClNm").value(foundItemDto.getPrdtClNm()))
-                .andExpect(jsonPath("$.data.depPlace").value(foundItemDto.getDepPlace()))
+                .andExpect(jsonPath("$.data.atcId").value(foundItemDto.atcId()))
+                .andExpect(jsonPath("$.data.fdPrdtNm").value(foundItemDto.fdPrdtNm()))
+                .andExpect(jsonPath("$.data.prdtClNm").value(foundItemDto.prdtClNm()))
+                .andExpect(jsonPath("$.data.depPlace").value(foundItemDto.depPlace()))
                 .andExpect(jsonPath("$.data.fdYmd").value(fixedDateTime.toLocalDate().toString()))
-                .andExpect(jsonPath("$.data.fdSbjt").value(foundItemDto.getFdSbjt()))
-                .andExpect(jsonPath("$.data.clrNm").value(foundItemDto.getClrNm()))
-                .andExpect(jsonPath("$.data.fdSn").value(foundItemDto.getFdSn()));
+                .andExpect(jsonPath("$.data.fdSbjt").value(foundItemDto.fdSbjt()))
+                .andExpect(jsonPath("$.data.clrNm").value(foundItemDto.clrNm()))
+                .andExpect(jsonPath("$.data.fdSn").value(foundItemDto.fdSn()));
     }
 
     @Test
@@ -163,14 +165,14 @@ public class FoundItemControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("등록 성공"))
-                .andExpect(jsonPath("$.data.atcId").value(foundItemDto.getAtcId()))
-                .andExpect(jsonPath("$.data.fdPrdtNm").value(foundItemDto.getFdPrdtNm()))
-                .andExpect(jsonPath("$.data.prdtClNm").value(foundItemDto.getPrdtClNm()))
-                .andExpect(jsonPath("$.data.depPlace").value(foundItemDto.getDepPlace()))
+                .andExpect(jsonPath("$.data.atcId").value(foundItemDto.atcId()))
+                .andExpect(jsonPath("$.data.fdPrdtNm").value(foundItemDto.fdPrdtNm()))
+                .andExpect(jsonPath("$.data.prdtClNm").value(foundItemDto.prdtClNm()))
+                .andExpect(jsonPath("$.data.depPlace").value(foundItemDto.depPlace()))
                 .andExpect(jsonPath("$.data.fdYmd").value(fixedDateTime.toLocalDate().toString()))
-                .andExpect(jsonPath("$.data.fdSbjt").value(foundItemDto.getFdSbjt()))
-                .andExpect(jsonPath("$.data.clrNm").value(foundItemDto.getClrNm()))
-                .andExpect(jsonPath("$.data.fdSn").value(foundItemDto.getFdSn()));
+                .andExpect(jsonPath("$.data.fdSbjt").value(foundItemDto.fdSbjt()))
+                .andExpect(jsonPath("$.data.clrNm").value(foundItemDto.clrNm()))
+                .andExpect(jsonPath("$.data.fdSn").value(foundItemDto.fdSn()));
     }
 
     @Test
@@ -183,14 +185,14 @@ public class FoundItemControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("수정 성공"))
-                .andExpect(jsonPath("$.data.atcId").value(foundItemDto.getAtcId()))
-                .andExpect(jsonPath("$.data.fdPrdtNm").value(foundItemDto.getFdPrdtNm()))
-                .andExpect(jsonPath("$.data.prdtClNm").value(foundItemDto.getPrdtClNm()))
-                .andExpect(jsonPath("$.data.depPlace").value(foundItemDto.getDepPlace()))
+                .andExpect(jsonPath("$.data.atcId").value(foundItemDto.atcId()))
+                .andExpect(jsonPath("$.data.fdPrdtNm").value(foundItemDto.fdPrdtNm()))
+                .andExpect(jsonPath("$.data.prdtClNm").value(foundItemDto.prdtClNm()))
+                .andExpect(jsonPath("$.data.depPlace").value(foundItemDto.depPlace()))
                 .andExpect(jsonPath("$.data.fdYmd").value(fixedDateTime.toLocalDate().toString()))
-                .andExpect(jsonPath("$.data.fdSbjt").value(foundItemDto.getFdSbjt()))
-                .andExpect(jsonPath("$.data.clrNm").value(foundItemDto.getClrNm()))
-                .andExpect(jsonPath("$.data.fdSn").value(foundItemDto.getFdSn()));
+                .andExpect(jsonPath("$.data.fdSbjt").value(foundItemDto.fdSbjt()))
+                .andExpect(jsonPath("$.data.clrNm").value(foundItemDto.clrNm()))
+                .andExpect(jsonPath("$.data.fdSn").value(foundItemDto.fdSn()));
     }
 
     @Test
@@ -206,14 +208,14 @@ public class FoundItemControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data", hasSize(1)))
-                .andExpect(jsonPath("$.data[0].atcId").value(foundItemDto.getAtcId()))
-                .andExpect(jsonPath("$.data[0].fdPrdtNm").value(foundItemDto.getFdPrdtNm()))
-                .andExpect(jsonPath("$.data[0].prdtClNm").value(foundItemDto.getPrdtClNm()))
-                .andExpect(jsonPath("$.data[0].depPlace").value(foundItemDto.getDepPlace()))
+                .andExpect(jsonPath("$.data[0].atcId").value(foundItemDto.atcId()))
+                .andExpect(jsonPath("$.data[0].fdPrdtNm").value(foundItemDto.fdPrdtNm()))
+                .andExpect(jsonPath("$.data[0].prdtClNm").value(foundItemDto.prdtClNm()))
+                .andExpect(jsonPath("$.data[0].depPlace").value(foundItemDto.depPlace()))
                 .andExpect(jsonPath("$.data[0].fdYmd").value(fixedDateTime.toLocalDate().toString()))
-                .andExpect(jsonPath("$.data[0].fdSbjt").value(foundItemDto.getFdSbjt()))
-                .andExpect(jsonPath("$.data[0].clrNm").value(foundItemDto.getClrNm()))
-                .andExpect(jsonPath("$.data[0].fdSn").value(foundItemDto.getFdSn()))
+                .andExpect(jsonPath("$.data[0].fdSbjt").value(foundItemDto.fdSbjt()))
+                .andExpect(jsonPath("$.data[0].clrNm").value(foundItemDto.clrNm()))
+                .andExpect(jsonPath("$.data[0].fdSn").value(foundItemDto.fdSn()))
                 .andExpect(jsonPath("$.page").value(0))
                 .andExpect(jsonPath("$.size").value(20))
                 .andExpect(jsonPath("$.totalElements").value(1))
@@ -234,14 +236,14 @@ public class FoundItemControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data", hasSize(1)))
-                .andExpect(jsonPath("$.data[0].atcId").value(foundItemDto.getAtcId()))
-                .andExpect(jsonPath("$.data[0].fdPrdtNm").value(foundItemDto.getFdPrdtNm()))
-                .andExpect(jsonPath("$.data[0].prdtClNm").value(foundItemDto.getPrdtClNm()))
-                .andExpect(jsonPath("$.data[0].depPlace").value(foundItemDto.getDepPlace()))
+                .andExpect(jsonPath("$.data[0].atcId").value(foundItemDto.atcId()))
+                .andExpect(jsonPath("$.data[0].fdPrdtNm").value(foundItemDto.fdPrdtNm()))
+                .andExpect(jsonPath("$.data[0].prdtClNm").value(foundItemDto.prdtClNm()))
+                .andExpect(jsonPath("$.data[0].depPlace").value(foundItemDto.depPlace()))
                 .andExpect(jsonPath("$.data[0].fdYmd").value(fixedDateTime.toLocalDate().toString()))
-                .andExpect(jsonPath("$.data[0].fdSbjt").value(foundItemDto.getFdSbjt()))
-                .andExpect(jsonPath("$.data[0].clrNm").value(foundItemDto.getClrNm()))
-                .andExpect(jsonPath("$.data[0].fdSn").value(foundItemDto.getFdSn()))
+                .andExpect(jsonPath("$.data[0].fdSbjt").value(foundItemDto.fdSbjt()))
+                .andExpect(jsonPath("$.data[0].clrNm").value(foundItemDto.clrNm()))
+                .andExpect(jsonPath("$.data[0].fdSn").value(foundItemDto.fdSn()))
                 .andExpect(jsonPath("$.page").value(0))
                 .andExpect(jsonPath("$.size").value(20))
                 .andExpect(jsonPath("$.totalElements").value(1))

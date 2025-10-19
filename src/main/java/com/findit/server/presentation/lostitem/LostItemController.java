@@ -46,32 +46,20 @@ public class LostItemController {
             @Parameter(description = "페이지 번호", required = false) @RequestParam(defaultValue = "0") @Min(0) int page,
             @Parameter(description = "페이지 크기", required = false) @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
         Page<LostItemDto> lostItemsPage = lostItemService.getAllLostItems(page, size);
-        List<LostItemDto> lostItems = lostItemsPage.getContent();
-        
-        ApiResponse<List<LostItemDto>> response = ApiResponse.success(lostItems);
-        response.setPage(page);
-        response.setSize(size);
-        response.setTotalElements(lostItemsPage.getTotalElements());
-        response.setTotalPages(lostItemsPage.getTotalPages());
-        
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.page(lostItemsPage));
     }
-    
+
     @GetMapping(value = "/{atcId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "분실물 상세 조회", description = "특정 ID의 분실물 상세 정보를 조회합니다.")
     @ApiResponses(value = {
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = LostItemDto.class))),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "분실물을 찾을 수 없음"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    public ResponseEntity<LostItemDto> getLostItemByAtcId(
+    public ResponseEntity<ApiResponse<LostItemDto>> getLostItemByAtcId(
             @Parameter(description = "분실물 관리 ID", required = true) @PathVariable String atcId) {
-        try {
-            LostItemDto lostItem = lostItemService.getLostItemByAtcId(atcId);
-            return ResponseEntity.ok(lostItem);
-        } catch (RuntimeException e) { 
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); 
-        }
+        LostItemDto lostItem = lostItemService.getLostItemByAtcId(atcId);
+        return ResponseEntity.ok(ApiResponse.success(lostItem));
     }
     
     @PostMapping
@@ -99,13 +87,8 @@ public class LostItemController {
     public ResponseEntity<ApiResponse<LostItemDto>> updateLostItem(
             @Parameter(description = "분실물 관리 ID", required = true) @PathVariable String atcId,
             @Parameter(description = "수정할 분실물 정보", required = true) @RequestBody @Valid LostItemDto lostItemDto) {
-        try {
-            LostItemDto updatedLostItem = lostItemService.updateLostItem(atcId, lostItemDto);
-            return ResponseEntity.ok(ApiResponse.success("Lost item updated successfully", updatedLostItem));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.error(e.getMessage()));
-        }
+        LostItemDto updatedLostItem = lostItemService.updateLostItem(atcId, lostItemDto);
+        return ResponseEntity.ok(ApiResponse.success("Lost item updated successfully", updatedLostItem));
     }
     
     @DeleteMapping("/{atcId}")
@@ -117,13 +100,8 @@ public class LostItemController {
     })
     public ResponseEntity<ApiResponse<Void>> deleteLostItem(
             @Parameter(description = "분실물 관리 ID", required = true) @PathVariable String atcId) {
-        try {
-            lostItemService.deleteLostItem(atcId);
-            return ResponseEntity.ok(ApiResponse.success("Lost item deleted successfully", null));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.error(e.getMessage()));
-        }
+        lostItemService.deleteLostItem(atcId);
+        return ResponseEntity.ok(ApiResponse.success("Lost item deleted successfully", null));
     }
     
     @GetMapping("/prdt-cl-nm/{prdtClNm}")
@@ -137,15 +115,7 @@ public class LostItemController {
             @Parameter(description = "페이지 번호", required = false) @RequestParam(defaultValue = "0") @Min(0) int page,
             @Parameter(description = "페이지 크기", required = false) @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
         Page<LostItemDto> lostItemsPage = lostItemService.findByPrdtClNm(prdtClNm, page, size);
-        List<LostItemDto> lostItems = lostItemsPage.getContent();
-        
-        ApiResponse<List<LostItemDto>> response = ApiResponse.success(lostItems);
-        response.setPage(page);
-        response.setSize(size);
-        response.setTotalElements(lostItemsPage.getTotalElements());
-        response.setTotalPages(lostItemsPage.getTotalPages());
-        
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.page(lostItemsPage));
     }
     
     @GetMapping("/lst-place")
@@ -159,15 +129,7 @@ public class LostItemController {
             @Parameter(description = "페이지 번호 (0부터 시작)", required = false) @RequestParam(defaultValue = "0") @Min(0) int page,
             @Parameter(description = "페이지 크기", required = false) @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
         Page<LostItemDto> lostItemsPage = lostItemService.findByLstPlaceContaining(lstPlace, page, size);
-        List<LostItemDto> lostItems = lostItemsPage.getContent();
-        
-        ApiResponse<List<LostItemDto>> response = ApiResponse.success(lostItems);
-        response.setPage(page);
-        response.setSize(size);
-        response.setTotalElements(lostItemsPage.getTotalElements());
-        response.setTotalPages(lostItemsPage.getTotalPages());
-        
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.page(lostItemsPage));
     }
     
     @GetMapping("/search")
@@ -181,15 +143,7 @@ public class LostItemController {
             @Parameter(description = "페이지 번호 (0부터 시작)", required = false) @RequestParam(defaultValue = "0") @Min(0) int page,
             @Parameter(description = "페이지 크기", required = false) @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
         Page<LostItemDto> lostItemsPage = lostItemService.searchByKeyword(keyword, page, size);
-        List<LostItemDto> lostItems = lostItemsPage.getContent();
-        
-        ApiResponse<List<LostItemDto>> response = ApiResponse.success(lostItems);
-        response.setPage(page);
-        response.setSize(size);
-        response.setTotalElements(lostItemsPage.getTotalElements());
-        response.setTotalPages(lostItemsPage.getTotalPages());
-        
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.page(lostItemsPage));
     }
     
     @GetMapping("/recent")
@@ -204,15 +158,7 @@ public class LostItemController {
             @Parameter(description = "페이지 번호 (0부터 시작)", required = false) @RequestParam(defaultValue = "0") @Min(0) int page,
             @Parameter(description = "페이지 크기", required = false) @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
         Page<LostItemDto> lostItemsPage = lostItemService.findRecentLostItems(prdtClNm, days, page, size);
-        List<LostItemDto> lostItems = lostItemsPage.getContent();
-        
-        ApiResponse<List<LostItemDto>> response = ApiResponse.success(lostItems);
-        response.setPage(page);
-        response.setSize(size);
-        response.setTotalElements(lostItemsPage.getTotalElements());
-        response.setTotalPages(lostItemsPage.getTotalPages());
-        
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.page(lostItemsPage));
     }
     
     @GetMapping("/lst-ymd-range")
@@ -232,14 +178,6 @@ public class LostItemController {
         }
         
         Page<LostItemDto> lostItemsPage = lostItemService.findByLstYmdBetween(start, end, page, size);
-        List<LostItemDto> lostItems = lostItemsPage.getContent();
-        
-        ApiResponse<List<LostItemDto>> response = ApiResponse.success(lostItems);
-        response.setPage(page);
-        response.setSize(size);
-        response.setTotalElements(lostItemsPage.getTotalElements());
-        response.setTotalPages(lostItemsPage.getTotalPages());
-        
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.page(lostItemsPage));
     }
 }

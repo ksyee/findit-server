@@ -1,6 +1,9 @@
 package com.findit.server.application.common;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 @Schema(description = "API Response Format")
 public class ApiResponse<T> {
@@ -183,7 +186,20 @@ public class ApiResponse<T> {
                 .data(data)
                 .build();
     }
-    
+
+    public static <T> ApiResponse<List<T>> page(Page<T> page) {
+        ApiResponse<List<T>> response = success(page.getContent());
+        return response.withPageMetadata(page);
+    }
+
+    public ApiResponse<T> withPageMetadata(Page<?> page) {
+        this.page = page.getNumber();
+        this.size = page.getSize();
+        this.totalElements = page.getTotalElements();
+        this.totalPages = page.getTotalPages();
+        return this;
+    }
+
     // Error response methods
     public static <T> ApiResponse<T> error(String message) {
         return ApiResponse.<T>builder()

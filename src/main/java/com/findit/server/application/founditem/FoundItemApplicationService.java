@@ -38,7 +38,7 @@ public class FoundItemApplicationService {
 
     @Transactional(readOnly = true)
     public Page<FoundItemDto> getAllFoundItems(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "atcId"));
+        Pageable pageable = pageOf(page, size, Sort.by(Sort.Direction.DESC, "atcId"));
         return foundItemRepository.findAll(pageable)
             .map(FoundItemDto::fromEntity);
     }
@@ -54,15 +54,15 @@ public class FoundItemApplicationService {
     public FoundItemDto createFoundItem(FoundItemDto foundItemDto) {
         try {
             FoundItem foundItem = FoundItem.create(
-                FoundItemId.of(foundItemDto.getAtcId()),
-                ItemName.of(foundItemDto.getFdPrdtNm()),
-                ItemCategory.of(foundItemDto.getPrdtClNm()),
-                FoundDate.of(foundItemDto.getFdYmd()),
-                LocationName.of(foundItemDto.getDepPlace()),
-                foundItemDto.getFdSbjt(),
+                FoundItemId.of(foundItemDto.atcId()),
+                ItemName.of(foundItemDto.fdPrdtNm()),
+                ItemCategory.of(foundItemDto.prdtClNm()),
+                FoundDate.of(foundItemDto.fdYmd()),
+                LocationName.of(foundItemDto.depPlace()),
+                foundItemDto.fdSbjt(),
                 null,
-                foundItemDto.getClrNm(),
-                foundItemDto.getFdSn()
+                foundItemDto.clrNm(),
+                foundItemDto.fdSn()
             );
 
             FoundItem savedFoundItem = foundItemRepository.save(foundItem);
@@ -78,13 +78,13 @@ public class FoundItemApplicationService {
             .orElseThrow(() -> new ResourceNotFoundException("FoundItem", "atcId", atcId));
         try {
             existingFoundItem.updateCoreDetails(
-                ItemName.of(foundItemDto.getFdPrdtNm()),
-                ItemCategory.of(foundItemDto.getPrdtClNm()),
-                FoundDate.of(foundItemDto.getFdYmd()),
-                LocationName.of(foundItemDto.getDepPlace()),
-                foundItemDto.getFdSbjt(),
-                foundItemDto.getClrNm(),
-                foundItemDto.getFdSn()
+                ItemName.of(foundItemDto.fdPrdtNm()),
+                ItemCategory.of(foundItemDto.prdtClNm()),
+                FoundDate.of(foundItemDto.fdYmd()),
+                LocationName.of(foundItemDto.depPlace()),
+                foundItemDto.fdSbjt(),
+                foundItemDto.clrNm(),
+                foundItemDto.fdSn()
             );
         } catch (IllegalArgumentException e) {
             throw new InvalidRequestException(e.getMessage());
@@ -111,7 +111,7 @@ public class FoundItemApplicationService {
 
     @Transactional(readOnly = true)
     public Page<FoundItemDto> findByItemType(String itemType, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = pageOf(page, size);
         return foundItemRepository.findByPrdtClNm(itemType, pageable)
             .map(FoundItemDto::fromEntity);
     }
@@ -125,7 +125,7 @@ public class FoundItemApplicationService {
 
     @Transactional(readOnly = true)
     public Page<FoundItemDto> findByLocation(String location, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = pageOf(page, size);
         return foundItemRepository.searchByKeyword(location, pageable)
             .map(FoundItemDto::fromEntity);
     }
@@ -139,7 +139,7 @@ public class FoundItemApplicationService {
 
     @Transactional(readOnly = true)
     public Page<FoundItemDto> searchByKeyword(String keyword, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = pageOf(page, size);
         return foundItemRepository.searchByKeyword(keyword, pageable)
             .map(FoundItemDto::fromEntity);
     }
@@ -155,7 +155,7 @@ public class FoundItemApplicationService {
 
     @Transactional(readOnly = true)
     public Page<FoundItemDto> findByDateRange(LocalDateTime start, LocalDateTime end, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = pageOf(page, size);
         String startStr = start.format(DateTimeFormatter.BASIC_ISO_DATE);
         String endStr = end.format(DateTimeFormatter.BASIC_ISO_DATE);
         return foundItemRepository.findByFdYmdBetween(startStr, endStr, pageable)
@@ -166,8 +166,16 @@ public class FoundItemApplicationService {
     public Page<FoundItemDto> findRecentFoundItems(String itemType, int days, int page, int size) {
         LocalDateTime startDate = LocalDateTime.now().minusDays(days);
         String startDateStr = startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = pageOf(page, size);
         return foundItemRepository.findRecentFoundItemsByType(itemType, startDateStr, pageable)
             .map(FoundItemDto::fromEntity);
+    }
+
+    private Pageable pageOf(int page, int size) {
+        return PageRequest.of(page, size);
+    }
+
+    private Pageable pageOf(int page, int size, Sort sort) {
+        return PageRequest.of(page, size, sort);
     }
 }
