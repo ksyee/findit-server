@@ -15,7 +15,7 @@
 | `/findit/prod/datasource-password` | **SecureString** | `YOUR_PASSWORD` |
 | `/findit/prod/api-security-key` | **SecureString** | `YOUR_API_KEY` |
 | `/findit/prod/api-security-enabled` | String | `true` |
-| `/findit/prod/police-api-enabled` | String | `false` |
+| `/findit/prod/police-api-enabled` | String | `true` |
 
 ### AWS CLI 사용
 
@@ -53,8 +53,10 @@ aws ssm put-parameter \
 aws ssm put-parameter \
   --name "/findit/prod/police-api-enabled" \
   --type "String" \
-  --value "false" \
+  --value "true" \
   --region ap-northeast-2
+
+> 필요 시 일시적으로 데이터를 중지하려면 `police-api-enabled` 값을 `false`로 덮어써 비활성화할 수 있습니다.
 ```
 
 ## 2. EC2 IAM Role 설정

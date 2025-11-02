@@ -79,7 +79,7 @@ docker run -d \
 - `Actuator` 엔드포인트(`/actuator/health`)를 통해 애플리케이션 상태를 확인할 수 있습니다. 해당 엔드포인트는 인증 없이 접근 가능합니다.
 - 일반 API 호출 시 `X-API-KEY` 헤더에 `API_SECURITY_KEY` 값을 넣어야 하며, 올바르지 않을 경우 401 응답을 반환합니다.
 - Flyway가 자동으로 실행되므로 `spring.jpa.hibernate.ddl-auto=validate` 설정이 적용되어 있습니다. 수동으로 DDL을 실행할 필요가 없습니다.
-- 현재 경찰청 API는 비활성화 상태이므로, Health Indicator는 `Disabled` 상태를 보고합니다. 추후 API 복구 시 `POLICE_API_ENABLED=true`와 유효한 서비스 키를 설정하세요.
+- 경찰청 API 연동은 기본적으로 활성화되어 있으므로, Health Indicator에서 외부 API 상태를 확인할 수 있습니다. 장애가 발생하면 `POLICE_API_ENABLED=false`로 임시 비활성화할 수 있습니다.
 
 ## 6. 배포 체크리스트
 - [ ] `.env` 또는 환경 변수를 최신 값으로 갱신했는가?
