@@ -27,9 +27,21 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return !securityProperties.isEnabled() ||
-            securityProperties.getPermitAll().stream()
-                .anyMatch(pattern -> pathMatcher.match(pattern, request.getServletPath()));
+        if (!securityProperties.isEnabled()) {
+            return true;
+        }
+        String path = resolveRequestPath(request);
+        return securityProperties.getPermitAll().stream()
+            .anyMatch(pattern -> pathMatcher.match(pattern, path));
+    }
+
+    private String resolveRequestPath(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        String contextPath = request.getContextPath();
+        if (contextPath != null && !contextPath.isEmpty() && uri.startsWith(contextPath)) {
+            return uri.substring(contextPath.length());
+        }
+        return uri;
     }
 
     @Override

@@ -73,6 +73,7 @@
             host: ${{ secrets.SSH_HOST }}
             username: ${{ secrets.SSH_USER }}
             key: ${{ secrets.SSH_KEY }}
+            command_timeout: 30m
             script: |
               set -euo pipefail
 
