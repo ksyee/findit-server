@@ -15,7 +15,7 @@
     PARAM_API_SECURITY_ENABLED: /findit/prod/api-security-enabled
     PARAM_API_SECURITY_KEY: /findit/prod/api-security-key
     PARAM_POLICE_API_ENABLED: /findit/prod/police-api-enabled
-    PARAM_POLICE_API_SERVICE_KEY: /findit/prod/police-api-service-key
+    PARAM_POLICE_API_SERVICE_KEY: /findit/prod/police.api.service-key
 
   jobs:
     test:
