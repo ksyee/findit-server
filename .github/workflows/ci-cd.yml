@@ -15,6 +15,7 @@
     PARAM_API_SECURITY_ENABLED: /findit/prod/api-security-enabled
     PARAM_API_SECURITY_KEY: /findit/prod/api-security-key
     PARAM_POLICE_API_ENABLED: /findit/prod/police-api-enabled
+    PARAM_POLICE_API_SERVICE_KEY: /findit/prod/police-api-service-key
 
   jobs:
     test:
@@ -68,7 +69,7 @@
         - name: SSH Deploy
           uses: appleboy/ssh-action@v1.0.3
           with:
-            envs: IMAGE_NAME,IMAGE_TAG,AWS_REGION,PARAM_DB_URL,PARAM_DB_USERNAME,PARAM_DB_PASSWORD,PARAM_API_SECURITY_ENABLED,PARAM_API_SECURITY_KEY,PARAM_POLICE_API_ENABLED,GHCR_USERNAME,GHCR_PAT
+            envs: IMAGE_NAME,IMAGE_TAG,AWS_REGION,PARAM_DB_URL,PARAM_DB_USERNAME,PARAM_DB_PASSWORD,PARAM_API_SECURITY_ENABLED,PARAM_API_SECURITY_KEY,PARAM_POLICE_API_ENABLED,PARAM_POLICE_API_SERVICE_KEY,GHCR_USERNAME,GHCR_PAT
             host: ${{ secrets.SSH_HOST }}
             username: ${{ secrets.SSH_USER }}
             key: ${{ secrets.SSH_KEY }}
@@ -83,6 +84,7 @@
               API_SECURITY_ENABLED=$(aws ssm get-parameter --region "$AWS_REGION" --name "$PARAM_API_SECURITY_ENABLED" --query 'Parameter.Value' --output text)
               API_SECURITY_KEY=$(aws ssm get-parameter --region "$AWS_REGION" --name "$PARAM_API_SECURITY_KEY" --with-decryption --query 'Parameter.Value' --output text)
               POLICE_API_ENABLED=$(aws ssm get-parameter --region "$AWS_REGION" --name "$PARAM_POLICE_API_ENABLED" --query 'Parameter.Value' --output text)
+              POLICE_API_SERVICE_KEY=$(aws ssm get-parameter --region "$AWS_REGION" --name "$PARAM_POLICE_API_SERVICE_KEY" --with-decryption --query 'Parameter.Value' --output text)
 
               docker pull "$IMAGE_NAME:$IMAGE_TAG"
 
@@ -100,6 +102,7 @@
                 -e API_SECURITY_ENABLED="$API_SECURITY_ENABLED" \
                 -e API_SECURITY_KEY="$API_SECURITY_KEY" \
                 -e POLICE_API_ENABLED="$POLICE_API_ENABLED" \
+                -e POLICE_API_SERVICE_KEY="$POLICE_API_SERVICE_KEY" \
                 "$IMAGE_NAME:$IMAGE_TAG"
 
               echo "Waiting for application to start..."
