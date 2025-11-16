@@ -6,6 +6,9 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
 import com.findit.server.infrastructure.police.dto.PoliceApiLostItemResponse;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 /**
  * 경찰청 API 헬스 체크 인디케이터
  * 외부 경찰청 API의 상태를 검사하여 헬스 정보 제공
@@ -38,8 +41,13 @@ public class PoliceApiHealthIndicator implements HealthIndicator {
                     .build();
         }
         try {
-            // 간단한 API 호출로 서비스 상태 확인 (첫 페이지, 1개 항목, 날짜/카테고리 필터 없음)
-            PoliceApiLostItemResponse response = apiClient.fetchLostItems(1, 1, null, null);
+            // 경찰청 API는 날짜 파라미터가 없으면 502(backend forwarding error)를 반환하므로
+            // 가장 최근 1일 범위로 최소 파라미터를 채워서 상태를 확인한다.
+            LocalDate now = LocalDate.now();
+            String startYmd = now.minusDays(1).format(DateTimeFormatter.BASIC_ISO_DATE);
+            String endYmd = now.format(DateTimeFormatter.BASIC_ISO_DATE);
+
+            PoliceApiLostItemResponse response = apiClient.fetchLostItems(1, 1, startYmd, endYmd);
             if (response != null && response.getHeader() != null && "00".equals(response.getHeader().getResultCode())) {
                 return Health.up()
                         .withDetail("service", "Police API")
