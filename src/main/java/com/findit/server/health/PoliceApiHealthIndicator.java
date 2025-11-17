@@ -2,7 +2,6 @@ package com.findit.server.health;
 
 import com.findit.server.infrastructure.police.client.PoliceApiClient;
 import com.findit.server.infrastructure.police.dto.PoliceApiLostItemResponse;
-import jakarta.annotation.PostConstruct;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -36,11 +35,6 @@ public class PoliceApiHealthIndicator implements HealthIndicator {
         this.apiClient = apiClient;
         this.staleAfter = Duration.ofMillis(staleAfterMillis);
         this.cachedHealth.set(buildPendingHealth());
-    }
-
-    @PostConstruct
-    public void initialize() {
-        refreshHealth();
     }
 
     /**
