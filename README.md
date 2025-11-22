@@ -1,6 +1,6 @@
 # FindIt Server
 
-**FindIt Server**는 분실물 및 습득물을 효율적으로 관리하기 위한 백엔드 애플리케이션입니다. Spring Boot를 기반으로 구축되었으며, 경찰청 유실물 통합포털(LOST112) 데이터와의 연동을 지원하여 더욱 풍부한 데이터를 제공합니다.
+**FindIt Server**는 경찰청의 분실물 및 습득물 API를 미리 받아 제공하는 백엔드 애플리케이션입니다. Spring Boot를 기반으로 구축되었으며, 더욱 원활한 Find It 사용을 위한 API를 제공합니다.
 
 ## 🛠 기술 스택 (Tech Stack)
 
@@ -76,11 +76,3 @@
 ## 🐳 배포 (Deployment)
 
 이 프로젝트는 Docker 및 AWS EC2 배포를 지원합니다. 자세한 배포 가이드는 [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) 문서를 참고하세요.
-
-## 🤝 기여 (Contribution)
-
-이 프로젝트에 기여하고 싶으신가요? 이슈를 등록하거나 Pull Request를 보내주세요.
-
-## 📄 라이선스 (License)
-
-[MIT License](LICENSE)
